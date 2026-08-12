@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Documentos Admissionais — RH</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F6F3;
+    --surface: #FFFFFF;
+    --surface2: #F0EEE9;
+    --border: #E2DFD8;
+    --border-strong: #C8C4BB;
+    --text: #1A1916;
+    --text2: #6B6860;
+    --text3: #9B9890;
+    --accent: #1A1916;
+    --green-bg: #EAF4EE;
+    --green-text: #1A6636;
+    --green-border: #A8D9B8;
+    --red-bg: #FDF0EE;
+    --red-text: #C0392B;
+    --red-border: #F2B8B2;
+    --amber-bg: #FDF5E6;
+    --amber-text: #8A5A00;
+    --amber-border: #F2D89A;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 20px; height: 20px; }
+  .site-header-text h1 { font-size: 15px; font-weight: 600; color: var(--text); }
+  .site-header-text p { font-size: 12px; color: var(--text2); margin-top: 1px; }
+  .header-badge {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 640px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  /* STEP NAME */
+  .step { display: none; }
+  .step.active { display: block; }
+
+  .welcome-block { text-align: center; padding: 40px 0 32px; }
+  .welcome-block h2 { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 8px; letter-spacing: -0.5px; }
+  .welcome-block p { font-size: 15px; color: var(--text2); line-height: 1.6; max-width: 400px; margin: 0 auto; }
+
+  .name-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 12px;
+  }
+  .name-card label { font-size: 13px; font-weight: 500; color: var(--text2); display: block; margin-bottom: 10px; letter-spacing: 0.02em; text-transform: uppercase; }
+  .name-card input {
+    width: 100%;
+    font-size: 17px;
+    font-weight: 500;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+  }
+  .name-card input:focus { border-color: var(--accent); background: var(--surface); }
+  .name-card input::placeholder { color: var(--text3); font-weight: 400; }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 15px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s, transform 0.1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-primary:hover:not(:disabled) { opacity: 0.85; }
+  .btn-primary:active:not(:disabled) { transform: scale(0.99); }
+  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* PROGRESS BAR */
+  .progress-wrap { margin-bottom: 24px; }
+  .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .progress-label { font-size: 13px; color: var(--text2); }
+  .progress-pct { font-size: 13px; font-weight: 600; color: var(--text); }
+  .progress-track { height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; text-align: center; }
+  .stat-num { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+  .stat-num.s-green { color: var(--green-text); }
+  .stat-num.s-red { color: var(--red-text); }
+  .stat-num.s-gray { color: var(--text); }
+  .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* SECTION LABEL */
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 20px 0 8px;
+  }
+
+  /* DOC ITEMS */
+  .doc-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .doc-item.optional { border-style: dashed; }
+  .doc-item.done { background: var(--green-bg); border-color: var(--green-border); border-style: solid; }
+
+  .doc-row { display: flex; align-items: center; gap: 14px; }
+
+  .doc-icon {
+    width: 38px; height: 38px;
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .doc-item.done .doc-icon { background: var(--green-bg); }
+  .doc-icon svg { width: 18px; height: 18px; }
+
+  .doc-info { flex: 1; min-width: 0; }
+  .doc-name { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.3; }
+  .doc-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge-required { background: var(--red-bg); color: var(--red-text); }
+  .badge-optional { background: var(--surface2); color: var(--text2); }
+  .badge-done { background: var(--green-bg); color: var(--green-text); }
+  .fname { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+
+  .upload-area { flex-shrink: 0; }
+  .upload-label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text2);
+    padding: 8px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: var(--surface);
+    transition: background 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .upload-label:hover { background: var(--surface2); border-color: var(--accent); color: var(--text); }
+  .doc-item.done .upload-label { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); }
+  .upload-label svg { width: 15px; height: 15px; }
+  .upload-input { display: none; }
+
+  .help-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    padding: 8px 0 0;
+    margin-left: 52px;
+    text-align: left;
+  }
+  .help-toggle:hover { color: var(--text); }
+  .help-toggle svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .help-toggle .chev { transition: transform 0.15s; }
+  .help-toggle.open .chev { transform: rotate(180deg); }
+
+  .help-panel {
+    display: none;
+    margin: 8px 0 2px 52px;
+    padding: 10px 12px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--amber-text);
+  }
+  .help-panel.open { display: block; }
+
+  .save-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text2);
+  }
+  .save-hint svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; color: var(--text2); }
+  .save-hint strong { color: var(--text); }
+
+  /* BROWSER WARNING */
+  .browser-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    color: var(--amber-text);
+    border-radius: var(--radius);
+    padding: 13px 14px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .browser-warning svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+  .browser-warning strong { font-weight: 700; }
+
+  /* DEADLINE COUNTDOWN */
+  .deadline-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--green-border);
+    background: var(--green-bg);
+    color: var(--green-text);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .deadline-card svg { width: 22px; height: 22px; flex-shrink: 0; }
+  .deadline-label { font-size: 11.5px; font-weight: 500; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.03em; }
+  .deadline-value { font-size: 18px; font-weight: 700; margin-top: 1px; letter-spacing: -0.2px; }
+
+  .deadline-card.deadline-warn { border-color: var(--amber-border); background: var(--amber-bg); color: var(--amber-text); }
+  .deadline-card.deadline-danger { border-color: var(--red-border); background: var(--red-bg); color: var(--red-text); animation: pulse-deadline 1.6s ease-in-out infinite; }
+  .deadline-card.deadline-expired { border-color: var(--red-border); background: var(--red-bg); color: var(--red-text); }
+
+  @keyframes pulse-deadline {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
+  }
+
+  /* COMPLETION CARD */
+  .completion-card {
+    display: none;
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-top: 18px;
+    animation: fade-in-up 0.3s ease;
+  }
+  .completion-card.show { display: block; }
+
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .completion-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+  .completion-head svg { width: 22px; height: 22px; flex-shrink: 0; margin-top: 2px; color: var(--green-text); }
+  .completion-title { font-size: 15.5px; font-weight: 700; color: var(--green-text); margin-bottom: 2px; }
+  .completion-sub { font-size: 12.5px; line-height: 1.5; color: var(--green-text); opacity: 0.9; }
+
+  .btn-whatsapp {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    background: #25D366;
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-whatsapp:hover:not(:disabled) { opacity: 0.9; }
+  .btn-whatsapp:active:not(:disabled) { transform: scale(0.99); }
+  .btn-whatsapp:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-whatsapp svg { width: 19px; height: 19px; flex-shrink: 0; }
+
+  .btn-whatsapp-secondary {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--surface);
+    color: var(--green-text);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius-sm);
+    padding: 11px;
+    margin-top: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+  .btn-whatsapp-secondary:hover { background: var(--green-bg); }
+  .btn-whatsapp-secondary svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .tutorial { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .tutorial-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text2);
+  }
+  .tutorial-num {
+    flex-shrink: 0;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: var(--green-border);
+    color: var(--green-text);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tutorial-step strong { color: var(--text); }
+
+  /* ALERT */
+  .alert {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 16px;
+  }
+  .alert svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+  .alert-warn { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+  .alert-success { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+
+  /* ACTION BAR */
+  .action-bar {
+    position: sticky;
+    bottom: 0;
+    background: rgba(247,246,243,0.95);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    margin: 0 -20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn-back {
+    flex-shrink: 0;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 13px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.15s;
+  }
+  .btn-back:hover { background: var(--surface2); }
+  .btn-back svg { width: 16px; height: 16px; }
+
+  .btn-download {
+    flex: 1;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-download:hover:not(:disabled) { opacity: 0.85; }
+  .btn-download:active:not(:disabled) { transform: scale(0.99); }
+  .btn-download:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-download svg { width: 18px; height: 18px; }
+
+  /* SPINNER */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 0.8s linear infinite; }
+
+  /* RESPONSIVE */
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+    .stat-num { font-size: 22px; }
+    .doc-row { flex-wrap: wrap; }
+    .upload-area { width: 100%; }
+    .upload-label { width: 100%; justify-content: center; }
+    .fname { max-width: 140px; }
+    .help-toggle, .help-panel { margin-left: 0; }
+    .welcome-block h2 { font-size: 22px; }
+    .action-bar { flex-direction: column; }
+    .btn-back, .btn-download { width: 100%; justify-content: center; }
+  }
+
+  /* FOOTER */
+  .site-footer {
+    text-align: center;
+    padding: 28px 20px 40px;
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+  }
+  .footer-credit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text3);
+    user-select: none;
+  }
+  .footer-credit strong { color: var(--text2); font-weight: 600; }
+  .footer-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border-strong); flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo-mark">
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 3h7l4 4v10a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" fill="white" opacity="0.3"/>
+      <path d="M12 3l4 4h-3a1 1 0 01-1-1V3z" fill="white"/>
+      <path d="M7 9h6M7 12h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="site-header-text">
+    <h1>Documentos Admissionais</h1>
+    <p>FORM RH 11 — Recursos Humanos</p>
+  </div>
+  <span class="header-badge">Revisão 03 · Set 2025</span>
+</header>
+
+<div class="container">
+
+  <div class="browser-warning" id="browser-warning">
+    <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L18 16H2L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8v3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="13.5" r="0.9" fill="currentColor"/></svg>
+    <div>
+      <strong>Abra isto no Chrome ou Safari antes de continuar.</strong><br>
+      Toque nos <strong>três pontinhos (⋮)</strong> no canto (ou no ícone de compartilhar, se estiver no iPhone) e escolha <strong>"Abrir no Chrome"</strong> ou <strong>"Abrir no Safari"</strong>. Se preencher aqui dentro de um app de mensagens, o arquivo final pode não baixar direito.
+    </div>
+  </div>
+
+  <!-- STEP 1: NOME -->
+  <div class="step active" id="step-nome">
+    <div class="welcome-block">
+      <h2>Envio de documentos</h2>
+      <p>Anexe todos os documentos listados abaixo e baixe o arquivo ZIP para entregá-los ao RH.</p>
+    </div>
+    <div class="name-card">
+      <label for="nome-input">Seu nome completo</label>
+      <input type="text" id="nome-input" placeholder="Ex: Maria Aparecida Santos" autocomplete="name" />
+    </div>
+    <div class="name-card" style="margin-top: 10px;">
+      <label for="cpf-input">Seu CPF</label>
+      <input type="text" id="cpf-input" placeholder="000.000.000-00" autocomplete="off" maxlength="14" inputmode="numeric" />
+    </div>
+    <div class="name-card" style="margin-top: 10px;">
+      <label for="telefone-input">Seu telefone (com DDD)</label>
+      <input type="text" id="telefone-input" placeholder="(00) 00000-0000" autocomplete="tel" maxlength="15" inputmode="numeric" />
+    </div>
+    <div class="name-card" style="margin-top: 10px;">
+      <label>Sexo</label>
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <label style="display:flex; align-items:center; gap:6px; font-weight:400; cursor:pointer;">
+          <input type="radio" name="sexo-input" value="M" style="width:16px;height:16px;"> Masculino
+        </label>
+        <label style="display:flex; align-items:center; gap:6px; font-weight:400; cursor:pointer;">
+          <input type="radio" name="sexo-input" value="F" style="width:16px;height:16px;"> Feminino
+        </label>
+      </div>
+    </div>
+    <div id="nome-form-erro" style="display:none; font-size:13px; color:var(--red-text); background:var(--red-bg); border:1px solid var(--red-border); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:10px;"></div>
+    <button class="btn-primary" id="btn-continuar">
+      <svg viewBox="0 0 20 20" fill="none" width="18" height="18"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Continuar para os documentos
+    </button>
+  </div>
+
+  <!-- STEP 2: DOCUMENTOS -->
+  <div class="step" id="step-docs">
+    <div class="deadline-card" id="deadline-card">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.3" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.8 1.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="deadline-text">
+        <div class="deadline-label">Tempo restante para enviar os documentos</div>
+        <div class="deadline-value" id="deadline-value">--h --min --s</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span class="progress-label" id="progress-label">Nenhum documento enviado ainda</span>
+        <span class="progress-pct" id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num s-green" id="stat-ok">0</div>
+        <div class="stat-lbl">Enviados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num s-red" id="stat-falta">0</div>
+        <div class="stat-lbl">Faltam</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num s-gray" id="stat-total">0</div>
+        <div class="stat-lbl">Total</div>
+      </div>
+    </div>
+
+    <div class="save-hint">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" stroke="currentColor" stroke-width="1.4"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <div><strong>Pode enviar aos poucos.</strong> Tudo o que você anexar fica salvo automaticamente neste navegador — feche a página quando quiser e volte depois para continuar de onde parou. Se não souber onde conseguir algum documento, toque em "Como conseguir esse documento?" logo abaixo dele.</div>
+    </div>
+
+    <div id="doc-list"></div>
+    <div id="alert-area"></div>
+
+    <div class="completion-card" id="completion-card">
+      <div class="completion-head">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>
+          <div class="completion-title">Tudo pronto! 🎉</div>
+          <div class="completion-sub">Todos os documentos obrigatórios foram enviados. Agora é só baixar a pasta e mandar pro RH por e-mail.</div>
+        </div>
+      </div>
+
+      <button class="btn-whatsapp" id="btn-whatsapp">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M2.5 5.5A1.5 1.5 0 014 4h12a1.5 1.5 0 011.5 1.5v9A1.5 1.5 0 0116 16H4a1.5 1.5 0 01-1.5-1.5v-9z" stroke="currentColor" stroke-width="1.5"/><path d="M3 5.5l7 5.5 7-5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="btn-whatsapp-text">Baixar pasta e abrir e-mail do RH</span>
+      </button>
+
+      <div class="tutorial">
+        <div class="tutorial-step">
+          <span class="tutorial-num">1</span>
+          <span>Toque no botão verde acima — ele baixa o arquivo <strong>.zip</strong> com todos os documentos e já abre o seu app de e-mail com o destinatário preenchido.</span>
+        </div>
+        <div class="tutorial-step">
+          <span class="tutorial-num">2</span>
+          <span>No e-mail que abriu, toque no ícone de <strong>anexo (📎)</strong> e escolha o arquivo <strong>.zip</strong> que acabou de baixar.</span>
+        </div>
+        <div class="tutorial-step">
+          <span class="tutorial-num">3</span>
+          <span>Confira o assunto e a mensagem (já vêm preenchidos) e toque em <strong>Enviar</strong>.</span>
+        </div>
+        <div class="tutorial-step">
+          <span class="tutorial-num">4</span>
+          <span><strong>Não achou o arquivo baixado?</strong> No Android: puxe a barra de notificações lá em cima e toque no aviso de "Download concluído". No iPhone: abra o app <strong>Arquivos</strong> → aba "Procurar" → toque em "Downloads" (ou "iCloud Drive → Downloads").</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top: 20px;">
+      <button id="btn-limpar" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit;">
+        Limpar progresso salvo e começar do zero
+      </button>
+    </div>
+
+    <div style="height: 80px;"></div>
+
+    <div class="action-bar">
+      <button class="btn-back" id="btn-voltar">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar
+      </button>
+      <button class="btn-download" id="btn-baixar" disabled>
+        <svg viewBox="0 0 20 20" fill="none" id="download-icon"><path d="M10 3v10M6 9l4 4 4-4M4 16h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="btn-baixar-text">Baixar pasta com documentos (ZIP)</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-credit">
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" stroke="currentColor" stroke-width="1.4"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    Desenvolvido por
+    <strong>Pablo Milcevski</strong>
+    <span class="footer-dot"></span>
+    Recursos Humanos
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+// ---- E-MAIL DO RH ----
+const RH_EMAIL = 'admissaorefricon@gmail.com';
+
+function getMailtoLink() {
+  const assunto = `Documentos Admissionais - ${nomeFunc || 'Candidato'}`;
+  const corpo = `Olá! Sou ${nomeFunc || 'candidato(a)'}, meu CPF é ${cpfFunc || ''} e meu telefone é ${telefoneFunc || ''}. Segue em anexo a pasta com meus documentos admissionais.`;
+  return `mailto:${RH_EMAIL}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+}
+
+const DOCS = [
+  // Documentos da empresa
+  { id: 'curriculo',                 name: 'Currículo',                                               required: true,  section: 'Documentos da Empresa',
+    help: 'Envie seu currículo atualizado (PDF, Word ou até uma foto legível). Se não tiver um pronto, escreva num documento simples com seus dados pessoais, experiências profissionais e formação — não precisa ser nada elaborado.' },
+  // Pessoais obrigatórios
+  { id: 'ctps',                      name: 'Carteira de Trabalho — CTPS (todos os registros)',        required: true,  section: 'Documentos Pessoais',
+    help: 'Se tiver a carteira física (capa azul), fotografe a página de identificação e todas as páginas com registros de contratos anteriores. Se só tiver a versão digital, baixe o app "Carteira de Trabalho Digital", entre com sua conta gov.br e tire print das telas de "Contratos de Trabalho".' },
+  { id: 'rg',                        name: 'Cédula de Identidade — RG',                               required: true,  section: 'Documentos Pessoais',
+    help: 'Foto ou digitalização do RG, frente e verso, bem legível. Perdeu o documento? Dá pra tirar a 2ª via no Poupatempo (SP) ou no órgão de identificação do seu estado (geralmente Instituto de Identificação da Polícia Civil).' },
+  { id: 'cpf',                       name: 'CPF — Cadastro de Pessoas Físicas',                       required: true,  section: 'Documentos Pessoais',
+    help: 'Pode enviar foto do cartão do CPF ou emitir o comprovante direto no site da Receita Federal, em "Consulta Situação Cadastral do CPF" — é gratuito e sai na hora.' },
+  { id: 'reservista',                name: 'Certificado Militar (Reservista)',                         required: true,  section: 'Documentos Pessoais',
+    help: 'Documento obrigatório para homens. Se perdeu o certificado, solicite a 2ª via na Junta de Serviço Militar da sua cidade ou pelo site do Exército Brasileiro (Certificado de Dispensa de Incorporação / Reservista).' },
+  { id: 'pis',                       name: 'Cartão de Cadastramento no PIS',                          required: true,  section: 'Documentos Pessoais',
+    help: 'O número do PIS/PASEP costuma estar na sua CTPS ou no extrato do FGTS. Abra o app FGTS (ou app da Caixa) e tire print da tela com seu número, ou envie foto do cartão do PIS se tiver.' },
+  { id: 'titulo_eleitor',            name: 'Título de Eleitor',                                       required: true,  section: 'Documentos Pessoais',
+    help: 'Não tem o título físico? Baixe o app e-Título ou acesse o "Autoatendimento do Eleitor" no site do TSE (Tribunal Superior Eleitoral) para consultar seus dados ou emitir a 2ª via.' },
+  { id: 'cnh',                       name: 'Carteira de Habilitação — CNH (somente motoristas)',       required: false, section: 'Documentos Pessoais',
+    help: 'Só é necessário se a função exigir dirigir. Envie foto da CNH aberta, frente e verso, ou o print da CNH digital pelo app da Carteira Digital de Trânsito.' },
+  { id: 'certidao',                  name: 'Certidão de Nascimento ou Casamento / União Estável',     required: true,  section: 'Documentos Pessoais',
+    help: 'Se solteiro(a), envie a certidão de nascimento; se casado(a) ou em união estável, a certidão correspondente. Perdeu a via física? Peça a 2ª via no cartório onde foi registrada ou pelo site registrocivil.org.br.' },
+  // Se casado
+  { id: 'cpf_rg_conjuge',            name: 'CPF e RG do cônjuge',                                    required: false, section: 'Se Casado',
+    help: 'Peça ao seu cônjuge uma foto ou cópia digitalizada do RG e do CPF (ou o mesmo comprovante de situação cadastral pelo site da Receita Federal).' },
+  // Filhos
+  { id: 'certidao_filho',            name: 'Certidão de Nascimento do(s) filho(s) até 24 anos',      required: false, section: 'Se Tiver Filhos',
+    help: 'Se não tiver a certidão em mãos, solicite a 2ª via no cartório onde foi registrada ou pelo site registrocivil.org.br.' },
+  { id: 'escolaridade_filho',        name: 'Comprovante de Escolaridade do(s) filho(s) — 7 a 14 anos', required: false, section: 'Se Tiver Filhos',
+    help: 'Peça na secretaria da escola do seu filho uma declaração simples de matrícula/frequência escolar — costuma ser emitida na hora.' },
+  { id: 'vacinacao_filho',           name: 'Carteira de Vacinação do(s) filho(s) até 7 anos',        required: false, section: 'Se Tiver Filhos',
+    help: 'Pode fotografar a caderneta física de vacinação ou emitir o comprovante digital pelo app Conecte SUS.' },
+  // Comprovantes
+  { id: 'comprovante_endereco',      name: 'Comprovante de Endereço',                                required: true,  section: 'Comprovantes',
+    help: 'Conta de luz, água, telefone ou internet dos últimos 3 meses, em seu nome. Se a conta não estiver no seu nome, peça uma declaração de residência simples com a assinatura do titular do imóvel.' },
+  { id: 'foto_3x4',                  name: 'Foto 3×4',                                               required: true,  section: 'Comprovantes',
+    help: 'Foto recente, com fundo branco. Pode tirar em qualquer lotérica, farmácia ou estúdio fotográfico — costuma custar pouco e fica pronta na hora.' },
+  { id: 'conta_bancaria',            name: 'Comprovante de Conta Bancária — Bradesco, Santander ou Itaú / Conta Super', required: true, section: 'Comprovantes',
+    help: 'Precisa ser em um destes bancos: Bradesco, Santander ou Itaú (Conta Super). Abra o app do banco e tire print da tela com agência e número da conta, ou envie foto do cartão.' },
+  { id: 'escolaridade',              name: 'Comprovante de Escolaridade',                             required: true,  section: 'Comprovantes',
+    help: 'Certificado ou diploma do seu grau de escolaridade mais alto (ensino fundamental, médio, técnico ou superior). Se perdeu, pode solicitar uma 2ª via na secretaria da instituição onde estudou.' },
+  { id: 'cursos',                    name: 'Comprovante de Cursos Realizados',                        required: false, section: 'Comprovantes',
+    help: 'Opcional: certificados de cursos livres, técnicos ou profissionalizantes que você já concluiu. Ajuda a enriquecer seu cadastro, mas não é obrigatório.' },
+];
+
+const uploaded = {};
+let nomeFunc = '';
+let cpfFunc = '';
+let telefoneFunc = '';
+let sexoFunc = '';
+
+// Retorna a lista de documentos aplicável, removendo o Certificado
+// Militar (Reservista) quando o sexo selecionado é feminino, já que
+// esse documento só é obrigatório para homens.
+function getActiveDocs() {
+  if (sexoFunc === 'F') {
+    return DOCS.filter(d => d.id !== 'reservista');
+  }
+  return DOCS;
+}
+
+// ---- ÍCONES SVG ----
+const iconFile = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 3h7l4 4v10a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="#9B9890" stroke-width="1.5"/><path d="M12 3v4h4" stroke="#9B9890" stroke-width="1.5" stroke-linecap="round"/><path d="M7 9h6M7 12h4" stroke="#9B9890" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+const iconCheck = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" stroke="#1A6636" stroke-width="1.5"/><path d="M7 10l2.5 2.5L13 8" stroke="#1A6636" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const iconUpload = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 14V5M6 8l4-4 4 4M4 16h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+// ---- STEP CONTROL ----
+const nomeInput = document.getElementById('nome-input');
+const cpfInput = document.getElementById('cpf-input');
+const telefoneInput = document.getElementById('telefone-input');
+const btnContinuar = document.getElementById('btn-continuar');
+const btnVoltar = document.getElementById('btn-voltar');
+const btnBaixar = document.getElementById('btn-baixar');
+
+function formatCPF(v) {
+  return v.replace(/\D/g, '').slice(0, 11)
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+}
+
+function validCPF(v) {
+  return v.replace(/\D/g, '').length === 11;
+}
+
+function formatTelefone(v) {
+  const d = v.replace(/\D/g, '').slice(0, 11);
+  if (d.length <= 10) {
+    return d.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d{1,4})$/, '$1-$2');
+  }
+  return d.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+}
+
+function validTelefone(v) {
+  return v.replace(/\D/g, '').length >= 10;
+}
+
+// Nota: no iPhone, quando o preenchimento vem do autopreenchimento do
+// teclado (QuickType) em vez de digitação manual, o Safari às vezes não
+// dispara o evento 'input'. Por isso não confiamos só nos eventos: o botão
+// "Continuar" fica sempre clicável e revalida os campos na hora do toque
+// (lendo o valor atual, não um estado guardado). checkForm() só cuida do
+// visual (opacidade) como reforço, quando os eventos disparam normalmente.
+function checkForm() {
+  const sexoSelecionado = document.querySelector('input[name="sexo-input"]:checked');
+  const ok = nomeInput.value.trim().length >= 2 && validCPF(cpfInput.value) && validTelefone(telefoneInput.value) && !!sexoSelecionado;
+  btnContinuar.style.opacity = ok ? '1' : '0.6';
+}
+
+['input', 'change', 'blur'].forEach(evt => {
+  nomeInput.addEventListener(evt, checkForm);
+  telefoneInput.addEventListener(evt, checkForm);
+});
+cpfInput.addEventListener('input', () => {
+  cpfInput.value = formatCPF(cpfInput.value);
+  checkForm();
+});
+cpfInput.addEventListener('blur', checkForm);
+telefoneInput.addEventListener('input', () => {
+  telefoneInput.value = formatTelefone(telefoneInput.value);
+  checkForm();
+});
+document.querySelectorAll('input[name="sexo-input"]').forEach(r => {
+  r.addEventListener('change', checkForm);
+});
+// Reforço extra: revalida periodicamente enquanto o usuário está nesta
+// etapa, cobrindo qualquer caso de autopreenchimento que não dispare eventos.
+setInterval(() => {
+  if (document.getElementById('step-nome').classList.contains('active')) checkForm();
+}, 500);
+checkForm();
+
+btnContinuar.addEventListener('click', () => {
+  const erroBox = document.getElementById('nome-form-erro');
+  const faltando = [];
+  if (nomeInput.value.trim().length < 2) faltando.push('nome completo');
+  if (!validCPF(cpfInput.value)) faltando.push('CPF válido (11 dígitos)');
+  if (!validTelefone(telefoneInput.value)) faltando.push('telefone válido');
+  const sexoSelecionado = document.querySelector('input[name="sexo-input"]:checked');
+  if (!sexoSelecionado) faltando.push('sexo');
+
+  if (faltando.length > 0) {
+    erroBox.textContent = 'Confira: ' + faltando.join(', ') + '.';
+    erroBox.style.display = 'block';
+    erroBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  erroBox.style.display = 'none';
+
+  nomeFunc = nomeInput.value.trim();
+  cpfFunc = cpfInput.value.trim();
+  telefoneFunc = telefoneInput.value.trim();
+  sexoFunc = sexoSelecionado.value;
+  document.getElementById('step-nome').classList.remove('active');
+  document.getElementById('step-docs').classList.add('active');
+  document.getElementById('stat-total').textContent = getActiveDocs().length;
+  renderDocs();
+  // carregar progresso salvo
+  const saved = loadProgress();
+  if (saved && saved.docs) {
+    Object.keys(saved.docs).forEach(id => {
+      if (!uploaded[id]) {
+        savedNames[id] = saved.docs[id];
+        markAsSaved(id, saved.docs[id]);
+      }
+    });
+  }
+  ensureDeadline(saved);
+  updateStats();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+btnVoltar.addEventListener('click', () => {
+  document.getElementById('step-docs').classList.remove('active');
+  document.getElementById('step-nome').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+document.addEventListener('click', e => {
+  if (e.target.id === 'btn-limpar') {
+    if (confirm('Tem certeza? Isso vai apagar o registro dos documentos já enviados para este CPF.')) {
+      clearProgress();
+      Object.keys(savedNames).forEach(k => delete savedNames[k]);
+      Object.keys(uploaded).forEach(k => delete uploaded[k]);
+      renderDocs();
+      updateStats();
+    }
+  }
+});
+
+// ---- RENDER DOCS ----
+function renderDocs() {
+  const list = document.getElementById('doc-list');
+  list.innerHTML = '';
+  let lastSection = '';
+
+  getActiveDocs().forEach(doc => {
+    if (doc.section !== lastSection) {
+      lastSection = doc.section;
+      const sl = document.createElement('div');
+      sl.className = 'section-title';
+      sl.textContent = doc.section;
+      list.appendChild(sl);
+    }
+
+    const item = document.createElement('div');
+    item.className = 'doc-item' + (doc.required ? '' : ' optional');
+    item.id = 'item-' + doc.id;
+
+    item.innerHTML = `
+      <div class="doc-row">
+        <div class="doc-icon" id="icon-${doc.id}">${iconFile}</div>
+        <div class="doc-info">
+          <div class="doc-name">${doc.name}</div>
+          <div class="doc-meta">
+            <span class="badge ${doc.required ? 'badge-required' : 'badge-optional'}" id="badge-${doc.id}">
+              ${doc.required ? 'Obrigatório' : 'Opcional'}
+            </span>
+            <span class="fname" id="fname-${doc.id}"></span>
+          </div>
+        </div>
+        <div class="upload-area">
+          <label class="upload-label" id="lbl-${doc.id}">
+            ${iconUpload}
+            <span id="lbl-txt-${doc.id}">Anexar</span>
+            <input class="upload-input" type="file" id="file-${doc.id}" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.webp,.heic" />
+          </label>
+        </div>
+      </div>
+      ${doc.help ? `
+      <button type="button" class="help-toggle" id="help-toggle-${doc.id}">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.3" stroke="currentColor" stroke-width="1.4"/><path d="M7.8 8a2.2 2.2 0 014.2.9c0 1.5-2 1.4-2 3.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="10" cy="14.3" r="0.9" fill="currentColor"/></svg>
+        Como conseguir esse documento?
+        <svg class="chev" viewBox="0 0 20 20" fill="none"><path d="M5.5 8l4.5 4.5L14.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="help-panel" id="help-panel-${doc.id}">${doc.help}</div>
+      ` : ''}
+    `;
+    list.appendChild(item);
+    document.getElementById('file-' + doc.id).addEventListener('change', e => handleFile(e, doc.id));
+    if (doc.help) {
+      const toggleBtn = document.getElementById('help-toggle-' + doc.id);
+      const panel = document.getElementById('help-panel-' + doc.id);
+      toggleBtn.addEventListener('click', () => {
+        toggleBtn.classList.toggle('open');
+        panel.classList.toggle('open');
+      });
+    }
+  });
+}
+
+// ---- PERSISTÊNCIA ----
+function storageKey() { return 'rh_docs_' + cpfFunc.replace(/\D/g, ''); }
+
+function saveProgress() {
+  const data = {};
+  Object.keys(uploaded).forEach(id => {
+    data[id] = uploaded[id].name;
+  });
+  // salva também nome, cpf e prazo de envio para preencher automaticamente
+  localStorage.setItem(storageKey(), JSON.stringify({ docs: data, nome: nomeFunc, cpf: cpfFunc, telefone: telefoneFunc, deadline: deadlineTimestamp }));
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(storageKey());
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function clearProgress() {
+  localStorage.removeItem(storageKey());
+}
+
+// ---- PRAZO DE ENVIO (24H) ----
+const DEADLINE_HOURS = 24;
+let deadlineTimestamp = null;
+let deadlineInterval = null;
+
+function ensureDeadline(saved) {
+  if (saved && saved.deadline) {
+    deadlineTimestamp = saved.deadline;
+  } else {
+    deadlineTimestamp = Date.now() + DEADLINE_HOURS * 60 * 60 * 1000;
+    saveProgress();
+  }
+  if (deadlineInterval) clearInterval(deadlineInterval);
+  updateDeadlineUI();
+  deadlineInterval = setInterval(updateDeadlineUI, 1000);
+}
+
+function resetDeadline() {
+  deadlineTimestamp = Date.now() + DEADLINE_HOURS * 60 * 60 * 1000;
+  saveProgress();
+  updateDeadlineUI();
+}
+
+function updateDeadlineUI() {
+  if (!deadlineTimestamp) return;
+  const card = document.getElementById('deadline-card');
+  const valueEl = document.getElementById('deadline-value');
+  const diff = deadlineTimestamp - Date.now();
+
+  if (diff <= 0) {
+    valueEl.textContent = 'Prazo de 24h expirado — fale com o RH';
+    card.className = 'deadline-card deadline-expired';
+    return;
+  }
+
+  const totalSeconds = Math.floor(diff / 1000);
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  valueEl.textContent = `${h}h ${String(m).padStart(2, '0')}min ${String(s).padStart(2, '0')}s restantes`;
+
+  let state = '';
+  if (totalSeconds < 2 * 3600) state = 'deadline-danger';
+  else if (totalSeconds < 8 * 3600) state = 'deadline-warn';
+  card.className = 'deadline-card ' + state;
+}
+
+// mapeamento de arquivos já enviados na sessão atual (File objects)
+// savedNames = { id: 'nome_do_arquivo.pdf' } — vem do localStorage
+const savedNames = {};
+
+function markAsSaved(id, fileName) {
+  savedNames[id] = fileName;
+  const item = document.getElementById('item-' + id);
+  if (!item) return;
+  item.classList.add('done');
+  document.getElementById('icon-' + id).innerHTML = iconCheck;
+  const badge = document.getElementById('badge-' + id);
+  badge.className = 'badge badge-done';
+  badge.textContent = 'Enviado';
+  document.getElementById('lbl-txt-' + id).textContent = 'Reenviar';
+  document.getElementById('fname-' + id).textContent = fileName;
+}
+
+function handleFile(e, id) {
+  const file = e.target.files[0];
+  if (!file) return;
+  uploaded[id] = file;
+  markAsSaved(id, file.name);
+  saveProgress();
+  updateStats();
+}
+
+function updateStats() {
+  const total = getActiveDocs().length;
+  // conta enviados = tem arquivo na sessão OU foi salvo anteriormente
+  const enviadosIds = new Set([...Object.keys(uploaded), ...Object.keys(savedNames)]);
+  const enviados = enviadosIds.size;
+  const requiredMissing = getActiveDocs().filter(d => d.required && !enviadosIds.has(d.id)).length;
+  // docs marcados como enviados antes mas sem arquivo na sessão atual (precisam reenvio para baixar)
+  const precisaReenvio = Object.keys(savedNames).filter(id => !uploaded[id]).length;
+  const pct = Math.round((enviados / total) * 100);
+
+  document.getElementById('stat-ok').textContent = enviados;
+  document.getElementById('stat-falta').textContent = requiredMissing;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-label').textContent =
+    enviados === 0 ? 'Nenhum documento enviado ainda' :
+    enviados === total ? 'Todos os documentos enviados!' :
+    `${enviados} de ${total} documentos enviados`;
+
+  btnBaixar.disabled = Object.keys(uploaded).length === 0;
+
+  const area = document.getElementById('alert-area');
+  if (requiredMissing === 0 && precisaReenvio === 0 && enviados > 0) {
+    area.innerHTML = `<div class="alert alert-success">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2.5 2.5L13 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Todos os documentos obrigatórios foram enviados! Baixe o arquivo ZIP e entregue ao RH.</span>
+    </div>`;
+  } else if (precisaReenvio > 0 && requiredMissing === 0) {
+    area.innerHTML = `<div class="alert alert-warn">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 3L2 17h16L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 14.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span><strong>${precisaReenvio}</strong> documento(s) foram enviados em sessões anteriores — clique em <strong>"Reenviar"</strong> neles para incluí-los no ZIP desta vez.</span>
+    </div>`;
+  } else if (requiredMissing > 0 && enviados > 0) {
+    area.innerHTML = `<div class="alert alert-warn">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 3L2 17h16L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 14.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>Ainda faltam <strong>${requiredMissing}</strong> documento(s) obrigatório(s). Você pode salvar e completar depois.</span>
+    </div>`;
+  } else {
+    area.innerHTML = '';
+  }
+
+  const completionCard = document.getElementById('completion-card');
+  if (requiredMissing === 0 && precisaReenvio === 0 && enviados > 0) {
+    completionCard.classList.add('show');
+  } else {
+    completionCard.classList.remove('show');
+  }
+}
+
+// ---- GERAÇÃO DO ZIP (compartilhada entre os botões) ----
+async function gerarZipBlob() {
+  const ids = Object.keys(uploaded);
+  if (ids.length === 0) return null;
+
+  const zip = new JSZip();
+  const nomeSafe = nomeFunc
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9 _-]/g, '')
+    .trim().replace(/ +/g, '_');
+
+  const folderName = nomeSafe || 'Candidato';
+  const folder = zip.folder(folderName);
+
+  // índice txt
+  let index = `PASTA DE DOCUMENTOS ADMISSIONAIS\n`;
+  index += `Funcionário: ${nomeFunc}\n`;
+  index += `CPF: ${cpfFunc}\n`;
+  index += `Telefone: ${telefoneFunc}\n`;
+  index += `Gerado em: ${new Date().toLocaleString('pt-BR')}\n`;
+  index += `Desenvolvido por: Pablo Milcevski — Recursos Humanos\n`;
+  index += `\n========================================\n\n`;
+  index += `DOCUMENTOS ENVIADOS:\n`;
+
+  for (const id of ids) {
+    const file = uploaded[id];
+    const ext = file.name.includes('.') ? '.' + file.name.split('.').pop() : '';
+    const docDef = DOCS.find(d => d.id === id);
+    const safeDocName = docDef.name
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9() _-]/g, '')
+      .trim().replace(/ +/g, '_');
+    const safeName = safeDocName + ext;
+    const buf = await file.arrayBuffer();
+    folder.file(safeName, buf);
+    index += `  ✓ ${docDef.name} → ${safeName}\n`;
+  }
+
+  const missing = getActiveDocs().filter(d => d.required && !uploaded[d.id]);
+  if (missing.length > 0) {
+    index += `\nDOCUMENTOS OBRIGATÓRIOS PENDENTES:\n`;
+    missing.forEach(d => { index += `  ✗ ${d.name}\n`; });
+  }
+
+  folder.file('_INDICE.txt', index);
+
+  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+  return { blob, folderName };
+}
+
+// ---- DOWNLOAD ZIP (botão manual) ----
+btnBaixar.addEventListener('click', async () => {
+  const ids = Object.keys(uploaded);
+  if (ids.length === 0) return;
+
+  const icon = document.getElementById('download-icon');
+  const txt = document.getElementById('btn-baixar-text');
+  icon.innerHTML = `<path d="M10 3a7 7 0 110 14A7 7 0 0110 3z" stroke="currentColor" stroke-width="1.5"/><path d="M10 3a7 7 0 017 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="spin"/>`;
+  txt.textContent = 'Compactando...';
+  btnBaixar.disabled = true;
+
+  try {
+    const { blob, folderName } = await gerarZipBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${folderName}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('Erro ao gerar ZIP:', err);
+    alert('Ocorreu um erro ao gerar o arquivo. Tente novamente.');
+  }
+
+  icon.innerHTML = `<path d="M10 3v10M6 9l4 4 4-4M4 16h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+  txt.textContent = 'Baixar pasta com documentos (ZIP)';
+  btnBaixar.disabled = Object.keys(uploaded).length === 0;
+});
+
+// ---- BAIXAR PASTA + ABRIR E-MAIL (botão de conclusão) ----
+const btnWhatsapp = document.getElementById('btn-whatsapp');
+btnWhatsapp.addEventListener('click', async () => {
+  const txt = document.getElementById('btn-whatsapp-text');
+  btnWhatsapp.disabled = true;
+  txt.textContent = 'Gerando pasta...';
+
+  try {
+    const result = await gerarZipBlob();
+    if (!result) return;
+    const { blob, folderName } = result;
+    const fileName = `${folderName}.zip`;
+
+    // baixa o zip
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    // abre o e-mail já com destinatário, assunto e mensagem preenchidos
+    setTimeout(() => {
+      window.location.href = getMailtoLink();
+    }, 600);
+  } catch (err) {
+    console.error('Erro ao gerar ZIP:', err);
+    alert('Ocorreu um erro ao gerar o arquivo. Tente novamente.');
+  }
+
+  txt.textContent = 'Baixar pasta e abrir e-mail do RH';
+  btnWhatsapp.disabled = false;
+});
+</script>
+</body>
+</html>
