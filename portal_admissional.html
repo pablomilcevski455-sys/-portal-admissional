@@ -513,7 +513,7 @@
     <h1>Documentos Admissionais</h1>
     <p>FORM RH 11 — Recursos Humanos</p>
   </div>
-  <span class="header-badge" id="header-badge">Revisão · Ago 2026</span>
+  <span class="header-badge">Revisão 03 · Set 2025</span>
 </header>
 
 <div class="container">
@@ -521,8 +521,8 @@
   <div class="browser-warning" id="browser-warning">
     <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L18 16H2L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8v3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="13.5" r="0.9" fill="currentColor"/></svg>
     <div>
-      <strong>Ainda está vendo isso dentro do WhatsApp ou outro app de mensagens?</strong><br>
-      Toque nos <strong>três pontinhos (⋮)</strong> no canto (ou no ícone de compartilhar, se estiver no iPhone) e escolha <strong>"Abrir no Chrome"</strong> ou <strong>"Abrir no Safari"</strong>. Se você já abriu pelo Chrome ou Safari, pode ignorar este aviso e seguir preenchendo normalmente.
+      <strong>Abra isto no Chrome ou Safari antes de continuar.</strong><br>
+      Toque nos <strong>três pontinhos (⋮)</strong> no canto (ou no ícone de compartilhar, se estiver no iPhone) e escolha <strong>"Abrir no Chrome"</strong> ou <strong>"Abrir no Safari"</strong>. Se preencher aqui dentro de um app de mensagens, o arquivo final pode não baixar direito.
     </div>
   </div>
 
@@ -544,7 +544,19 @@
       <label for="telefone-input">Seu telefone (com DDD)</label>
       <input type="text" id="telefone-input" placeholder="(00) 00000-0000" autocomplete="tel" maxlength="15" inputmode="numeric" />
     </div>
-    <button class="btn-primary" id="btn-continuar" disabled>
+    <div class="name-card" style="margin-top: 10px;">
+      <label>Sexo</label>
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <label style="display:flex; align-items:center; gap:6px; font-weight:400; cursor:pointer;">
+          <input type="radio" name="sexo-input" value="M" style="width:16px;height:16px;"> Masculino
+        </label>
+        <label style="display:flex; align-items:center; gap:6px; font-weight:400; cursor:pointer;">
+          <input type="radio" name="sexo-input" value="F" style="width:16px;height:16px;"> Feminino
+        </label>
+      </div>
+    </div>
+    <div id="nome-form-erro" style="display:none; font-size:13px; color:var(--red-text); background:var(--red-bg); border:1px solid var(--red-border); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:10px;"></div>
+    <button class="btn-primary" id="btn-continuar">
       <svg viewBox="0 0 20 20" fill="none" width="18" height="18"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Continuar para os documentos
     </button>
@@ -659,14 +671,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-// ---- BADGE DE REVISÃO (mês/ano atual, sempre atualizado) ----
-(function atualizarBadgeRevisao() {
-  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const agora = new Date();
-  const badge = document.getElementById('header-badge');
-  if (badge) badge.textContent = `Revisão · ${meses[agora.getMonth()]} ${agora.getFullYear()}`;
-})();
-
 // ---- E-MAIL DO RH ----
 const RH_EMAIL = 'admissaorefricon@gmail.com';
 
@@ -724,6 +728,17 @@ const uploaded = {};
 let nomeFunc = '';
 let cpfFunc = '';
 let telefoneFunc = '';
+let sexoFunc = '';
+
+// Retorna a lista de documentos aplicável, removendo o Certificado
+// Militar (Reservista) quando o sexo selecionado é feminino, já que
+// esse documento só é obrigatório para homens.
+function getActiveDocs() {
+  if (sexoFunc === 'F') {
+    return DOCS.filter(d => d.id !== 'reservista');
+  }
+  return DOCS;
+}
 
 // ---- ÍCONES SVG ----
 const iconFile = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 3h7l4 4v10a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="#9B9890" stroke-width="1.5"/><path d="M12 3v4h4" stroke="#9B9890" stroke-width="1.5" stroke-linecap="round"/><path d="M7 9h6M7 12h4" stroke="#9B9890" stroke-width="1.5" stroke-linecap="round"/></svg>`;
@@ -761,27 +776,65 @@ function validTelefone(v) {
   return v.replace(/\D/g, '').length >= 10;
 }
 
+// Nota: no iPhone, quando o preenchimento vem do autopreenchimento do
+// teclado (QuickType) em vez de digitação manual, o Safari às vezes não
+// dispara o evento 'input'. Por isso não confiamos só nos eventos: o botão
+// "Continuar" fica sempre clicável e revalida os campos na hora do toque
+// (lendo o valor atual, não um estado guardado). checkForm() só cuida do
+// visual (opacidade) como reforço, quando os eventos disparam normalmente.
 function checkForm() {
-  btnContinuar.disabled = nomeInput.value.trim().length < 2 || !validCPF(cpfInput.value) || !validTelefone(telefoneInput.value);
+  const sexoSelecionado = document.querySelector('input[name="sexo-input"]:checked');
+  const ok = nomeInput.value.trim().length >= 2 && validCPF(cpfInput.value) && validTelefone(telefoneInput.value) && !!sexoSelecionado;
+  btnContinuar.style.opacity = ok ? '1' : '0.6';
 }
 
-nomeInput.addEventListener('input', checkForm);
+['input', 'change', 'blur'].forEach(evt => {
+  nomeInput.addEventListener(evt, checkForm);
+  telefoneInput.addEventListener(evt, checkForm);
+});
 cpfInput.addEventListener('input', () => {
   cpfInput.value = formatCPF(cpfInput.value);
   checkForm();
 });
+cpfInput.addEventListener('blur', checkForm);
 telefoneInput.addEventListener('input', () => {
   telefoneInput.value = formatTelefone(telefoneInput.value);
   checkForm();
 });
+document.querySelectorAll('input[name="sexo-input"]').forEach(r => {
+  r.addEventListener('change', checkForm);
+});
+// Reforço extra: revalida periodicamente enquanto o usuário está nesta
+// etapa, cobrindo qualquer caso de autopreenchimento que não dispare eventos.
+setInterval(() => {
+  if (document.getElementById('step-nome').classList.contains('active')) checkForm();
+}, 500);
+checkForm();
 
 btnContinuar.addEventListener('click', () => {
+  const erroBox = document.getElementById('nome-form-erro');
+  const faltando = [];
+  if (nomeInput.value.trim().length < 2) faltando.push('nome completo');
+  if (!validCPF(cpfInput.value)) faltando.push('CPF válido (11 dígitos)');
+  if (!validTelefone(telefoneInput.value)) faltando.push('telefone válido');
+  const sexoSelecionado = document.querySelector('input[name="sexo-input"]:checked');
+  if (!sexoSelecionado) faltando.push('sexo');
+
+  if (faltando.length > 0) {
+    erroBox.textContent = 'Confira: ' + faltando.join(', ') + '.';
+    erroBox.style.display = 'block';
+    erroBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  erroBox.style.display = 'none';
+
   nomeFunc = nomeInput.value.trim();
   cpfFunc = cpfInput.value.trim();
   telefoneFunc = telefoneInput.value.trim();
+  sexoFunc = sexoSelecionado.value;
   document.getElementById('step-nome').classList.remove('active');
   document.getElementById('step-docs').classList.add('active');
-  document.getElementById('stat-total').textContent = DOCS.length;
+  document.getElementById('stat-total').textContent = getActiveDocs().length;
   renderDocs();
   // carregar progresso salvo
   const saved = loadProgress();
@@ -822,7 +875,7 @@ function renderDocs() {
   list.innerHTML = '';
   let lastSection = '';
 
-  DOCS.forEach(doc => {
+  getActiveDocs().forEach(doc => {
     if (doc.section !== lastSection) {
       lastSection = doc.section;
       const sl = document.createElement('div');
@@ -974,11 +1027,11 @@ function handleFile(e, id) {
 }
 
 function updateStats() {
-  const total = DOCS.length;
+  const total = getActiveDocs().length;
   // conta enviados = tem arquivo na sessão OU foi salvo anteriormente
   const enviadosIds = new Set([...Object.keys(uploaded), ...Object.keys(savedNames)]);
   const enviados = enviadosIds.size;
-  const requiredMissing = DOCS.filter(d => d.required && !enviadosIds.has(d.id)).length;
+  const requiredMissing = getActiveDocs().filter(d => d.required && !enviadosIds.has(d.id)).length;
   // docs marcados como enviados antes mas sem arquivo na sessão atual (precisam reenvio para baixar)
   const precisaReenvio = Object.keys(savedNames).filter(id => !uploaded[id]).length;
   const pct = Math.round((enviados / total) * 100);
@@ -1060,7 +1113,7 @@ async function gerarZipBlob() {
     index += `  ✓ ${docDef.name} → ${safeName}\n`;
   }
 
-  const missing = DOCS.filter(d => d.required && !uploaded[d.id]);
+  const missing = getActiveDocs().filter(d => d.required && !uploaded[d.id]);
   if (missing.length > 0) {
     index += `\nDOCUMENTOS OBRIGATÓRIOS PENDENTES:\n`;
     missing.forEach(d => { index += `  ✗ ${d.name}\n`; });
