@@ -197,6 +197,31 @@
   .badge-done { background: var(--green-bg); color: var(--green-text); }
   .fname { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
 
+  .file-chips { display: flex; flex-direction: column; gap: 5px; margin: 8px 0 0 52px; }
+  .file-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--surface2);
+    border-radius: 7px;
+    padding: 6px 8px 6px 10px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .file-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-chip button {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--red-text);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+    font-family: inherit;
+  }
+
   .upload-area { flex-shrink: 0; }
   .upload-label {
     display: flex; align-items: center; gap: 6px;
@@ -475,6 +500,7 @@
     .upload-label { width: 100%; justify-content: center; }
     .fname { max-width: 140px; }
     .help-toggle, .help-panel { margin-left: 0; }
+    .file-chips { margin-left: 0; }
     .welcome-block h2 { font-size: 22px; }
     .action-bar { flex-direction: column; }
     .btn-back, .btn-download { width: 100%; justify-content: center; }
@@ -513,7 +539,7 @@
     <h1>Documentos Admissionais</h1>
     <p>FORM RH 11 — Recursos Humanos</p>
   </div>
-  <span class="header-badge">Revisão 03 · Set 2025</span>
+  <span class="header-badge" id="header-badge">Revisão · Ago 2026</span>
 </header>
 
 <div class="container">
@@ -521,8 +547,8 @@
   <div class="browser-warning" id="browser-warning">
     <svg viewBox="0 0 20 20" fill="none"><path d="M10 2L18 16H2L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8v3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="13.5" r="0.9" fill="currentColor"/></svg>
     <div>
-      <strong>Abra isto no Chrome ou Safari antes de continuar.</strong><br>
-      Toque nos <strong>três pontinhos (⋮)</strong> no canto (ou no ícone de compartilhar, se estiver no iPhone) e escolha <strong>"Abrir no Chrome"</strong> ou <strong>"Abrir no Safari"</strong>. Se preencher aqui dentro de um app de mensagens, o arquivo final pode não baixar direito.
+      <strong>Ainda está vendo isso dentro do WhatsApp ou outro app de mensagens?</strong><br>
+      Toque nos <strong>três pontinhos (⋮)</strong> no canto (ou no ícone de compartilhar, se estiver no iPhone) e escolha <strong>"Abrir no Chrome"</strong> ou <strong>"Abrir no Safari"</strong>. Se você já abriu pelo Chrome ou Safari, pode ignorar este aviso e seguir preenchendo normalmente.
     </div>
   </div>
 
@@ -545,18 +571,14 @@
       <input type="text" id="telefone-input" placeholder="(00) 00000-0000" autocomplete="tel" maxlength="15" inputmode="numeric" />
     </div>
     <div class="name-card" style="margin-top: 10px;">
-      <label>Sexo</label>
-      <div style="display:flex; gap:10px; margin-top:8px;">
-        <label style="display:flex; align-items:center; gap:6px; font-weight:400; cursor:pointer;">
-          <input type="radio" name="sexo-input" value="M" style="width:16px;height:16px;"> Masculino
-        </label>
-        <label style="display:flex; align-items:center; gap:6px; font-weight:400; cursor:pointer;">
-          <input type="radio" name="sexo-input" value="F" style="width:16px;height:16px;"> Feminino
-        </label>
-      </div>
+      <label for="sexo-input">Sexo (define quais documentos aparecem, ex: reservista)</label>
+      <select id="sexo-input" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border); background:var(--surface2); color:var(--text); font-family:inherit; font-size:14px;">
+        <option value="">Selecione</option>
+        <option value="M">Masculino</option>
+        <option value="F">Feminino</option>
+      </select>
     </div>
-    <div id="nome-form-erro" style="display:none; font-size:13px; color:var(--red-text); background:var(--red-bg); border:1px solid var(--red-border); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:10px;"></div>
-    <button class="btn-primary" id="btn-continuar">
+    <button class="btn-primary" id="btn-continuar" disabled>
       <svg viewBox="0 0 20 20" fill="none" width="18" height="18"><path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Continuar para os documentos
     </button>
@@ -607,8 +629,8 @@
       <div class="completion-head">
         <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <div>
-          <div class="completion-title">Tudo pronto! 🎉</div>
-          <div class="completion-sub">Todos os documentos obrigatórios foram enviados. Agora é só baixar a pasta e mandar pro RH por e-mail.</div>
+          <div class="completion-title">Parabéns, você já concluiu 90% do processo! 🎉</div>
+          <div class="completion-sub">Todos os documentos obrigatórios foram anexados. Falta só o último passo: baixar a pasta e enviar por e-mail pro RH.</div>
         </div>
       </div>
 
@@ -671,6 +693,14 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
+// ---- BADGE DE REVISÃO (mês/ano atual, sempre atualizado) ----
+(function atualizarBadgeRevisao() {
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const agora = new Date();
+  const badge = document.getElementById('header-badge');
+  if (badge) badge.textContent = `Revisão · ${meses[agora.getMonth()]} ${agora.getFullYear()}`;
+})();
+
 // ---- E-MAIL DO RH ----
 const RH_EMAIL = 'admissaorefricon@gmail.com';
 
@@ -685,13 +715,13 @@ const DOCS = [
   { id: 'curriculo',                 name: 'Currículo',                                               required: true,  section: 'Documentos da Empresa',
     help: 'Envie seu currículo atualizado (PDF, Word ou até uma foto legível). Se não tiver um pronto, escreva num documento simples com seus dados pessoais, experiências profissionais e formação — não precisa ser nada elaborado.' },
   // Pessoais obrigatórios
-  { id: 'ctps',                      name: 'Carteira de Trabalho — CTPS (todos os registros)',        required: true,  section: 'Documentos Pessoais',
+  { id: 'ctps',                      name: 'Carteira de Trabalho — CTPS (todos os registros)',        required: true,  section: 'Documentos Pessoais', multiFile: true,
     help: 'Se tiver a carteira física (capa azul), fotografe a página de identificação e todas as páginas com registros de contratos anteriores. Se só tiver a versão digital, baixe o app "Carteira de Trabalho Digital", entre com sua conta gov.br e tire print das telas de "Contratos de Trabalho".' },
-  { id: 'rg',                        name: 'Cédula de Identidade — RG',                               required: true,  section: 'Documentos Pessoais',
+  { id: 'rg',                        name: 'Cédula de Identidade — RG',                               required: true,  section: 'Documentos Pessoais', multiFile: true,
     help: 'Foto ou digitalização do RG, frente e verso, bem legível. Perdeu o documento? Dá pra tirar a 2ª via no Poupatempo (SP) ou no órgão de identificação do seu estado (geralmente Instituto de Identificação da Polícia Civil).' },
   { id: 'cpf',                       name: 'CPF — Cadastro de Pessoas Físicas',                       required: true,  section: 'Documentos Pessoais',
     help: 'Pode enviar foto do cartão do CPF ou emitir o comprovante direto no site da Receita Federal, em "Consulta Situação Cadastral do CPF" — é gratuito e sai na hora.' },
-  { id: 'reservista',                name: 'Certificado Militar (Reservista)',                         required: true,  section: 'Documentos Pessoais',
+  { id: 'reservista',                name: 'Certificado Militar (Reservista)',                         required: true,  section: 'Documentos Pessoais', onlyFor: 'M',
     help: 'Documento obrigatório para homens. Se perdeu o certificado, solicite a 2ª via na Junta de Serviço Militar da sua cidade ou pelo site do Exército Brasileiro (Certificado de Dispensa de Incorporação / Reservista).' },
   { id: 'pis',                       name: 'Cartão de Cadastramento no PIS',                          required: true,  section: 'Documentos Pessoais',
     help: 'O número do PIS/PASEP costuma estar na sua CTPS ou no extrato do FGTS. Abra o app FGTS (ou app da Caixa) e tire print da tela com seu número, ou envie foto do cartão do PIS se tiver.' },
@@ -730,14 +760,9 @@ let cpfFunc = '';
 let telefoneFunc = '';
 let sexoFunc = '';
 
-// Retorna a lista de documentos aplicável, removendo o Certificado
-// Militar (Reservista) quando o sexo selecionado é feminino, já que
-// esse documento só é obrigatório para homens.
-function getActiveDocs() {
-  if (sexoFunc === 'F') {
-    return DOCS.filter(d => d.id !== 'reservista');
-  }
-  return DOCS;
+// retorna só os documentos que se aplicam à pessoa (ex: reservista some para mulheres)
+function docsAtivos() {
+  return DOCS.filter(d => !d.onlyFor || d.onlyFor === sexoFunc);
 }
 
 // ---- ÍCONES SVG ----
@@ -749,6 +774,7 @@ const iconUpload = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.or
 const nomeInput = document.getElementById('nome-input');
 const cpfInput = document.getElementById('cpf-input');
 const telefoneInput = document.getElementById('telefone-input');
+const sexoInput = document.getElementById('sexo-input');
 const btnContinuar = document.getElementById('btn-continuar');
 const btnVoltar = document.getElementById('btn-voltar');
 const btnBaixar = document.getElementById('btn-baixar');
@@ -776,73 +802,39 @@ function validTelefone(v) {
   return v.replace(/\D/g, '').length >= 10;
 }
 
-// Nota: no iPhone, quando o preenchimento vem do autopreenchimento do
-// teclado (QuickType) em vez de digitação manual, o Safari às vezes não
-// dispara o evento 'input'. Por isso não confiamos só nos eventos: o botão
-// "Continuar" fica sempre clicável e revalida os campos na hora do toque
-// (lendo o valor atual, não um estado guardado). checkForm() só cuida do
-// visual (opacidade) como reforço, quando os eventos disparam normalmente.
 function checkForm() {
-  const sexoSelecionado = document.querySelector('input[name="sexo-input"]:checked');
-  const ok = nomeInput.value.trim().length >= 2 && validCPF(cpfInput.value) && validTelefone(telefoneInput.value) && !!sexoSelecionado;
-  btnContinuar.style.opacity = ok ? '1' : '0.6';
+  btnContinuar.disabled = nomeInput.value.trim().length < 2 || !validCPF(cpfInput.value) || !validTelefone(telefoneInput.value) || !sexoInput.value;
 }
 
-['input', 'change', 'blur'].forEach(evt => {
-  nomeInput.addEventListener(evt, checkForm);
-  telefoneInput.addEventListener(evt, checkForm);
-});
+nomeInput.addEventListener('input', checkForm);
 cpfInput.addEventListener('input', () => {
   cpfInput.value = formatCPF(cpfInput.value);
   checkForm();
 });
-cpfInput.addEventListener('blur', checkForm);
 telefoneInput.addEventListener('input', () => {
   telefoneInput.value = formatTelefone(telefoneInput.value);
   checkForm();
 });
-document.querySelectorAll('input[name="sexo-input"]').forEach(r => {
-  r.addEventListener('change', checkForm);
-});
-// Reforço extra: revalida periodicamente enquanto o usuário está nesta
-// etapa, cobrindo qualquer caso de autopreenchimento que não dispare eventos.
-setInterval(() => {
-  if (document.getElementById('step-nome').classList.contains('active')) checkForm();
-}, 500);
-checkForm();
+sexoInput.addEventListener('change', checkForm);
 
 btnContinuar.addEventListener('click', () => {
-  const erroBox = document.getElementById('nome-form-erro');
-  const faltando = [];
-  if (nomeInput.value.trim().length < 2) faltando.push('nome completo');
-  if (!validCPF(cpfInput.value)) faltando.push('CPF válido (11 dígitos)');
-  if (!validTelefone(telefoneInput.value)) faltando.push('telefone válido');
-  const sexoSelecionado = document.querySelector('input[name="sexo-input"]:checked');
-  if (!sexoSelecionado) faltando.push('sexo');
-
-  if (faltando.length > 0) {
-    erroBox.textContent = 'Confira: ' + faltando.join(', ') + '.';
-    erroBox.style.display = 'block';
-    erroBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-  erroBox.style.display = 'none';
-
   nomeFunc = nomeInput.value.trim();
   cpfFunc = cpfInput.value.trim();
   telefoneFunc = telefoneInput.value.trim();
-  sexoFunc = sexoSelecionado.value;
+  sexoFunc = sexoInput.value;
   document.getElementById('step-nome').classList.remove('active');
   document.getElementById('step-docs').classList.add('active');
-  document.getElementById('stat-total').textContent = getActiveDocs().length;
+  document.getElementById('stat-total').textContent = docsAtivos().length;
   renderDocs();
   // carregar progresso salvo
   const saved = loadProgress();
   if (saved && saved.docs) {
     Object.keys(saved.docs).forEach(id => {
       if (!uploaded[id]) {
-        savedNames[id] = saved.docs[id];
-        markAsSaved(id, saved.docs[id]);
+        const val = saved.docs[id];
+        const names = Array.isArray(val) ? val : [val]; // compatibilidade com formato antigo
+        savedNames[id] = names;
+        markAsSaved(id, names);
       }
     });
   }
@@ -875,7 +867,7 @@ function renderDocs() {
   list.innerHTML = '';
   let lastSection = '';
 
-  getActiveDocs().forEach(doc => {
+  docsAtivos().forEach(doc => {
     if (doc.section !== lastSection) {
       lastSection = doc.section;
       const sl = document.createElement('div');
@@ -892,7 +884,7 @@ function renderDocs() {
       <div class="doc-row">
         <div class="doc-icon" id="icon-${doc.id}">${iconFile}</div>
         <div class="doc-info">
-          <div class="doc-name">${doc.name}</div>
+          <div class="doc-name">${doc.name}${doc.multiFile ? ' <span style="font-weight:400;color:var(--text3);font-size:11px;">(pode enviar mais de uma foto)</span>' : ''}</div>
           <div class="doc-meta">
             <span class="badge ${doc.required ? 'badge-required' : 'badge-optional'}" id="badge-${doc.id}">
               ${doc.required ? 'Obrigatório' : 'Opcional'}
@@ -904,10 +896,11 @@ function renderDocs() {
           <label class="upload-label" id="lbl-${doc.id}">
             ${iconUpload}
             <span id="lbl-txt-${doc.id}">Anexar</span>
-            <input class="upload-input" type="file" id="file-${doc.id}" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.webp,.heic" />
+            <input class="upload-input" type="file" id="file-${doc.id}" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.webp,.heic" ${doc.multiFile ? 'multiple' : ''} />
           </label>
         </div>
       </div>
+      <div class="file-chips" id="chips-${doc.id}"></div>
       ${doc.help ? `
       <button type="button" class="help-toggle" id="help-toggle-${doc.id}">
         <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.3" stroke="currentColor" stroke-width="1.4"/><path d="M7.8 8a2.2 2.2 0 014.2.9c0 1.5-2 1.4-2 3.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="10" cy="14.3" r="0.9" fill="currentColor"/></svg>
@@ -918,7 +911,7 @@ function renderDocs() {
       ` : ''}
     `;
     list.appendChild(item);
-    document.getElementById('file-' + doc.id).addEventListener('change', e => handleFile(e, doc.id));
+    document.getElementById('file-' + doc.id).addEventListener('change', e => handleFile(e, doc));
     if (doc.help) {
       const toggleBtn = document.getElementById('help-toggle-' + doc.id);
       const panel = document.getElementById('help-panel-' + doc.id);
@@ -936,10 +929,10 @@ function storageKey() { return 'rh_docs_' + cpfFunc.replace(/\D/g, ''); }
 function saveProgress() {
   const data = {};
   Object.keys(uploaded).forEach(id => {
-    data[id] = uploaded[id].name;
+    data[id] = uploaded[id].map(f => f.name);
   });
   // salva também nome, cpf e prazo de envio para preencher automaticamente
-  localStorage.setItem(storageKey(), JSON.stringify({ docs: data, nome: nomeFunc, cpf: cpfFunc, telefone: telefoneFunc, deadline: deadlineTimestamp }));
+  localStorage.setItem(storageKey(), JSON.stringify({ docs: data, nome: nomeFunc, cpf: cpfFunc, telefone: telefoneFunc, sexo: sexoFunc, deadline: deadlineTimestamp }));
 }
 
 function loadProgress() {
@@ -1000,38 +993,102 @@ function updateDeadlineUI() {
   card.className = 'deadline-card ' + state;
 }
 
-// mapeamento de arquivos já enviados na sessão atual (File objects)
-// savedNames = { id: 'nome_do_arquivo.pdf' } — vem do localStorage
+// mapeamento de arquivos já enviados na sessão atual
+// uploaded[id] = array de File objects (mesmo para documentos de arquivo único)
+// savedNames[id] = array de nomes de arquivo — vem do localStorage
 const savedNames = {};
 
-function markAsSaved(id, fileName) {
-  savedNames[id] = fileName;
-  const item = document.getElementById('item-' + id);
-  if (!item) return;
-  item.classList.add('done');
-  document.getElementById('icon-' + id).innerHTML = iconCheck;
-  const badge = document.getElementById('badge-' + id);
-  badge.className = 'badge badge-done';
-  badge.textContent = 'Enviado';
-  document.getElementById('lbl-txt-' + id).textContent = 'Reenviar';
-  document.getElementById('fname-' + id).textContent = fileName;
+function docLabel(doc, count) {
+  if (doc.multiFile) {
+    return count === 0 ? 'Anexar' : `Anexar mais (${count})`;
+  }
+  return count === 0 ? 'Anexar' : 'Reenviar';
 }
 
-function handleFile(e, id) {
-  const file = e.target.files[0];
-  if (!file) return;
-  uploaded[id] = file;
-  markAsSaved(id, file.name);
+function renderChips(id, names) {
+  const box = document.getElementById('chips-' + id);
+  if (!box) return;
+  const doc = DOCS.find(d => d.id === id);
+  if (!doc.multiFile || names.length === 0) { box.innerHTML = ''; return; }
+  box.innerHTML = names.map((n, i) => `
+    <div class="file-chip">
+      <span>📎 ${n}</span>
+      <button type="button" data-id="${id}" data-idx="${i}" class="remove-chip">✕</button>
+    </div>
+  `).join('');
+  box.querySelectorAll('.remove-chip').forEach(btn => {
+    btn.addEventListener('click', () => removeFile(btn.dataset.id, parseInt(btn.dataset.idx, 10)));
+  });
+}
+
+function markAsSaved(id, names) {
+  savedNames[id] = names;
+  const item = document.getElementById('item-' + id);
+  if (!item) return;
+  const doc = DOCS.find(d => d.id === id);
+  const count = names.length;
+  if (count > 0) {
+    item.classList.add('done');
+    document.getElementById('icon-' + id).innerHTML = iconCheck;
+    const badge = document.getElementById('badge-' + id);
+    badge.className = 'badge badge-done';
+    badge.textContent = doc.multiFile ? `Enviado (${count})` : 'Enviado';
+  }
+  document.getElementById('lbl-txt-' + id).textContent = docLabel(doc, count);
+  document.getElementById('fname-' + id).textContent = doc.multiFile ? '' : (names[0] || '');
+  renderChips(id, names);
+}
+
+function removeFile(id, idx) {
+  if (uploaded[id]) uploaded[id].splice(idx, 1);
+  if (savedNames[id]) savedNames[id].splice(idx, 1);
+  const names = (uploaded[id] || []).map(f => f.name);
+  if (names.length === 0) {
+    delete uploaded[id];
+    delete savedNames[id];
+    const item = document.getElementById('item-' + id);
+    if (item) {
+      item.classList.remove('done');
+      document.getElementById('icon-' + id).innerHTML = iconFile;
+      const doc = DOCS.find(d => d.id === id);
+      const badge = document.getElementById('badge-' + id);
+      badge.className = 'badge ' + (doc.required ? 'badge-required' : 'badge-optional');
+      badge.textContent = doc.required ? 'Obrigatório' : 'Opcional';
+      document.getElementById('lbl-txt-' + id).textContent = 'Anexar';
+      document.getElementById('fname-' + id).textContent = '';
+    }
+    renderChips(id, []);
+  } else {
+    markAsSaved(id, names);
+  }
   saveProgress();
   updateStats();
 }
 
+function handleFile(e, doc) {
+  const files = Array.from(e.target.files || []);
+  if (files.length === 0) return;
+  const id = doc.id;
+
+  if (doc.multiFile) {
+    if (!uploaded[id]) uploaded[id] = [];
+    uploaded[id] = uploaded[id].concat(files).slice(0, 6); // limite de 6 arquivos
+  } else {
+    uploaded[id] = [files[0]];
+  }
+
+  markAsSaved(id, uploaded[id].map(f => f.name));
+  saveProgress();
+  updateStats();
+  e.target.value = ''; // permite re-selecionar o mesmo arquivo depois
+}
+
 function updateStats() {
-  const total = getActiveDocs().length;
+  const total = docsAtivos().length;
   // conta enviados = tem arquivo na sessão OU foi salvo anteriormente
   const enviadosIds = new Set([...Object.keys(uploaded), ...Object.keys(savedNames)]);
   const enviados = enviadosIds.size;
-  const requiredMissing = getActiveDocs().filter(d => d.required && !enviadosIds.has(d.id)).length;
+  const requiredMissing = docsAtivos().filter(d => d.required && !enviadosIds.has(d.id)).length;
   // docs marcados como enviados antes mas sem arquivo na sessão atual (precisam reenvio para baixar)
   const precisaReenvio = Object.keys(savedNames).filter(id => !uploaded[id]).length;
   const pct = Math.round((enviados / total) * 100);
@@ -1086,6 +1143,11 @@ async function gerarZipBlob() {
     .replace(/[^a-zA-Z0-9 _-]/g, '')
     .trim().replace(/ +/g, '_');
 
+  const primeiroNome = (nomeFunc.trim().split(/\s+/)[0] || 'CANDIDATO')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toUpperCase();
+
   const folderName = nomeSafe || 'Candidato';
   const folder = zip.folder(folderName);
 
@@ -1100,20 +1162,27 @@ async function gerarZipBlob() {
   index += `DOCUMENTOS ENVIADOS:\n`;
 
   for (const id of ids) {
-    const file = uploaded[id];
-    const ext = file.name.includes('.') ? '.' + file.name.split('.').pop() : '';
+    const files = uploaded[id];
     const docDef = DOCS.find(d => d.id === id);
-    const safeDocName = docDef.name
+    const docTag = id
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9() _-]/g, '')
-      .trim().replace(/ +/g, '_');
-    const safeName = safeDocName + ext;
-    const buf = await file.arrayBuffer();
-    folder.file(safeName, buf);
-    index += `  ✓ ${docDef.name} → ${safeName}\n`;
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .toUpperCase();
+
+    const nomesGerados = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const ext = file.name.includes('.') ? '.' + file.name.split('.').pop() : '';
+      const sufixo = files.length > 1 ? `_${i + 1}` : '';
+      const safeName = `${primeiroNome}-${docTag}${sufixo}${ext}`;
+      const buf = await file.arrayBuffer();
+      folder.file(safeName, buf);
+      nomesGerados.push(safeName);
+    }
+    index += `  ✓ ${docDef.name} (${files.length} arquivo${files.length > 1 ? 's' : ''}) → ${nomesGerados.join(', ')}\n`;
   }
 
-  const missing = getActiveDocs().filter(d => d.required && !uploaded[d.id]);
+  const missing = docsAtivos().filter(d => d.required && !uploaded[d.id]);
   if (missing.length > 0) {
     index += `\nDOCUMENTOS OBRIGATÓRIOS PENDENTES:\n`;
     missing.forEach(d => { index += `  ✗ ${d.name}\n`; });
