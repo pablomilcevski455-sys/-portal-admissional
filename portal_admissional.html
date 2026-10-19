@@ -6,6 +6,7 @@
 <title>Portal de Documentos Admissionais — RH</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
 
   :root {
     --bg: #F7F6F3;
@@ -134,13 +135,14 @@
   .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; }
 
   /* STATS */
-  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; text-align: center; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 8px; text-align: center; }
   .stat-num { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
   .stat-num.s-green { color: var(--green-text); }
   .stat-num.s-red { color: var(--red-text); }
+  .stat-num.s-amber { color: var(--amber-text); }
   .stat-num.s-gray { color: var(--text); }
-  .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-lbl { font-size: 10.5px; color: var(--text2); margin-top: 2px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em; }
 
   /* SECTION LABEL */
   .section-title {
@@ -166,6 +168,7 @@
   }
   .doc-item.optional { border-style: dashed; }
   .doc-item.done { background: var(--green-bg); border-color: var(--green-border); border-style: solid; }
+  .doc-item.justified { background: var(--amber-bg); border-color: var(--amber-border); border-style: solid; }
 
   .doc-row { display: flex; align-items: center; gap: 14px; }
 
@@ -178,6 +181,7 @@
     transition: background 0.2s;
   }
   .doc-item.done .doc-icon { background: var(--green-bg); }
+  .doc-item.justified .doc-icon { background: var(--amber-bg); }
   .doc-icon svg { width: 18px; height: 18px; }
 
   .doc-info { flex: 1; min-width: 0; }
@@ -195,6 +199,7 @@
   .badge-required { background: var(--red-bg); color: var(--red-text); }
   .badge-optional { background: var(--surface2); color: var(--text2); }
   .badge-done { background: var(--green-bg); color: var(--green-text); }
+  .badge-just { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
   .fname { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
 
   .file-chips { display: flex; flex-direction: column; gap: 5px; margin: 8px 0 0 52px; }
@@ -237,6 +242,7 @@
   }
   .upload-label:hover { background: var(--surface2); border-color: var(--accent); color: var(--text); }
   .doc-item.done .upload-label { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); }
+  .upload-label.busy { opacity: 0.6; pointer-events: none; }
   .upload-label svg { width: 15px; height: 15px; }
   .upload-input { display: none; }
 
@@ -272,6 +278,76 @@
     color: var(--amber-text);
   }
   .help-panel.open { display: block; }
+
+  /* MENSAGENS POR DOCUMENTO (foto recusada / aviso / justificativa) */
+  .doc-msg {
+    margin: 10px 0 0 52px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .doc-msg.err  { background: var(--red-bg);   border-color: var(--red-border);   color: var(--red-text); }
+  .doc-msg.warn { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-text); }
+  .doc-msg strong { font-weight: 700; }
+  .doc-msg ul { margin: 4px 0 0 18px; }
+  .row-btns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .mini-btn {
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .mini-btn:hover { background: var(--surface2); }
+  .mini-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .mini-btn.primary:hover { opacity: 0.88; background: var(--accent); }
+
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    padding: 8px 0 0;
+    margin-left: 52px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-align: left;
+  }
+  .link-btn:hover { color: var(--text); }
+
+  .just-form {
+    margin: 10px 0 0 52px;
+    padding: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+  }
+  .just-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .just-form label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em; margin: 10px 0 5px; }
+  .just-form select, .just-form textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .just-form textarea { resize: vertical; }
+  .just-note { font-size: 11.5px; color: var(--text2); margin-top: 8px; line-height: 1.5; }
 
   .save-hint {
     display: flex;
@@ -376,28 +452,6 @@
   .btn-whatsapp:disabled { opacity: 0.6; cursor: not-allowed; }
   .btn-whatsapp svg { width: 19px; height: 19px; flex-shrink: 0; }
 
-  .btn-whatsapp-secondary {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: var(--surface);
-    color: var(--green-text);
-    border: 1px solid var(--green-border);
-    border-radius: var(--radius-sm);
-    padding: 11px;
-    margin-top: 10px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    box-sizing: border-box;
-  }
-  .btn-whatsapp-secondary:hover { background: var(--green-bg); }
-  .btn-whatsapp-secondary svg { width: 16px; height: 16px; flex-shrink: 0; }
-
   .tutorial { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
   .tutorial-step {
     display: flex;
@@ -491,19 +545,150 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .spin { animation: spin 0.8s linear infinite; }
 
+  /* CHAT DE AJUDA */
+  .chat-fab {
+    position: fixed;
+    right: 16px;
+    bottom: 92px;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 13px 18px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+  }
+  .chat-fab svg { width: 18px; height: 18px; }
+  .chat-panel {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 200;
+    width: min(380px, calc(100vw - 32px));
+    height: min(560px, calc(100vh - 32px));
+    height: min(560px, calc(100dvh - 32px));
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .chat-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 14px;
+    background: var(--accent);
+    color: #fff;
+  }
+  .chat-head-text { flex: 1; min-width: 0; }
+  .chat-head-text strong { display: block; font-size: 14px; }
+  .chat-head-text span { font-size: 11.5px; opacity: 0.75; }
+  .chat-close { background: none; border: none; color: #fff; font-size: 20px; line-height: 1; cursor: pointer; padding: 4px 8px; font-family: inherit; }
+  .chat-log { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 9px; background: var(--bg); }
+  .chat-msg {
+    max-width: 88%;
+    padding: 9px 12px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .chat-msg.bot { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .chat-msg.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+  .chat-msg.typing { color: var(--text3); font-style: italic; }
+  .chat-actions { display: flex; flex-wrap: wrap; gap: 6px; align-self: flex-start; max-width: 96%; }
+  .chat-action {
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--accent);
+    background: var(--surface);
+    color: var(--accent);
+    cursor: pointer;
+  }
+  .chat-action:hover { background: var(--accent); color: #fff; }
+  .chat-chips { display: flex; gap: 6px; padding: 8px 12px; overflow-x: auto; border-top: 1px solid var(--border); background: var(--surface); }
+  .chat-chip {
+    flex-shrink: 0;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 11px;
+    border-radius: 99px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface2);
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chat-form { display: flex; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid var(--border); background: var(--surface); }
+  .chat-form input {
+    flex: 1;
+    min-width: 0;
+    font-family: inherit;
+    font-size: 16px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  .chat-form input:focus { border-color: var(--accent); background: var(--surface); }
+  .chat-form button {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+  }
+  .chat-report { align-self: stretch; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px; }
+  .chat-report label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.04em; margin: 9px 0 4px; }
+  .chat-report label:first-child { margin-top: 0; }
+  .chat-report select, .chat-report textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+  }
+  .chat-report textarea { resize: vertical; }
+
   /* RESPONSIVE */
   @media (max-width: 480px) {
-    .stats-grid { grid-template-columns: repeat(3, 1fr); }
     .stat-num { font-size: 22px; }
+    .stat-lbl { font-size: 9.5px; }
     .doc-row { flex-wrap: wrap; }
     .upload-area { width: 100%; }
     .upload-label { width: 100%; justify-content: center; }
     .fname { max-width: 140px; }
-    .help-toggle, .help-panel { margin-left: 0; }
+    .help-toggle, .help-panel, .link-btn, .doc-msg, .just-form { margin-left: 0; }
     .file-chips { margin-left: 0; }
     .welcome-block h2 { font-size: 22px; }
     .action-bar { flex-direction: column; }
     .btn-back, .btn-download { width: 100%; justify-content: center; }
+    .chat-fab { bottom: 150px; }
+    .chat-panel { right: 8px; bottom: 8px; width: calc(100vw - 16px); height: calc(100vh - 16px); height: calc(100dvh - 16px); }
   }
 
   /* FOOTER */
@@ -612,6 +797,10 @@
         <div class="stat-lbl">Faltam</div>
       </div>
       <div class="stat-card">
+        <div class="stat-num s-amber" id="stat-just">0</div>
+        <div class="stat-lbl">Justificados</div>
+      </div>
+      <div class="stat-card">
         <div class="stat-num s-gray" id="stat-total">0</div>
         <div class="stat-lbl">Total</div>
       </div>
@@ -619,7 +808,7 @@
 
     <div class="save-hint">
       <svg viewBox="0 0 20 20" fill="none"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z" stroke="currentColor" stroke-width="1.4"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <div><strong>Pode enviar aos poucos.</strong> Tudo o que você anexar fica salvo automaticamente neste navegador — feche a página quando quiser e volte depois para continuar de onde parou. Se não souber onde conseguir algum documento, toque em "Como conseguir esse documento?" logo abaixo dele.</div>
+      <div><strong>Pode enviar aos poucos.</strong> Tudo o que você anexar fica salvo automaticamente neste navegador — feche a página quando quiser e volte depois para continuar de onde parou. Se não souber onde conseguir algum documento, toque em "Como conseguir esse documento?" logo abaixo dele. <strong>Não vai conseguir algum documento em 24h?</strong> Use "Não consigo enviar em 24h" no próprio documento, ou toque em <strong>Ajuda</strong> para falar com a gente. As fotos precisam estar legíveis: o portal confere na hora e avisa se precisar tirar de novo.</div>
     </div>
 
     <div id="doc-list"></div>
@@ -629,8 +818,8 @@
       <div class="completion-head">
         <svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <div>
-          <div class="completion-title">Parabéns, você já concluiu 90% do processo! 🎉</div>
-          <div class="completion-sub">Todos os documentos obrigatórios foram anexados. Falta só o último passo: baixar a pasta e enviar por e-mail pro RH.</div>
+          <div class="completion-title" id="completion-title">Parabéns, você já concluiu 90% do processo! 🎉</div>
+          <div class="completion-sub" id="completion-sub">Todos os documentos obrigatórios foram anexados. Falta só o último passo: baixar a pasta e enviar por e-mail pro RH.</div>
         </div>
       </div>
 
@@ -691,24 +880,63 @@
   </div>
 </footer>
 
+<!-- CHAT DE AJUDA -->
+<button class="chat-fab" id="chat-fab" type="button" aria-label="Abrir ajuda" aria-expanded="false" aria-controls="chat-panel">
+  <svg viewBox="0 0 20 20" fill="none"><path d="M3 5.5A2.5 2.5 0 015.5 3h9A2.5 2.5 0 0117 5.5v6a2.5 2.5 0 01-2.5 2.5H9l-3.5 3v-3h0A2.5 2.5 0 013 11.5v-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  Ajuda
+</button>
+<section class="chat-panel" id="chat-panel" role="dialog" aria-label="Chat de ajuda" hidden>
+  <div class="chat-head">
+    <div class="chat-head-text">
+      <strong>Ajuda com os documentos</strong>
+      <span>Tire dúvidas ou conte o que está impedindo o envio</span>
+    </div>
+    <button class="chat-close" id="chat-close" type="button" aria-label="Fechar ajuda">✕</button>
+  </div>
+  <div class="chat-log" id="chat-log" aria-live="polite"></div>
+  <div class="chat-chips" id="chat-chips"></div>
+  <form class="chat-form" id="chat-form" autocomplete="off">
+    <input type="text" id="chat-input" placeholder="Escreva sua dúvida…" maxlength="400" aria-label="Sua mensagem" />
+    <button type="submit">Enviar</button>
+  </form>
+</section>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
+// =====================================================================
+// CONFIGURAÇÃO
+// =====================================================================
+const RH_EMAIL = 'admissaorefricon@gmail.com';
+
+// IA OPCIONAL (deixe vazio para usar só as checagens/respostas locais).
+// Como este site é estático (GitHub Pages), a chave da IA NUNCA pode ficar aqui no código.
+// Se quiser IA de verdade, publique um pequeno servidor/função (ex.: Cloudflare Worker) que guarde a chave
+// e cole a URL dele abaixo.
+//
+//  AI_CHAT_URL   recebe  POST { mensagens:[{role,content}], pendentes:[nomes] }  e devolve { resposta: "texto" }
+//  AI_VISION_URL recebe  POST { documento:"nome", imagem:"data:image/jpeg;base64,..." }
+//                        e devolve { legivel: true|false, tipo_correto: true|false (opcional), motivo: "texto" }
+//   (a leitura local por OCR já confere legibilidade e tipo do documento sem servidor; a IA externa é um reforço opcional)
+//
+// ATENÇÃO (LGPD): o AI_VISION_URL envia a foto do documento para um serviço externo. Combine com o jurídico/DPO
+// e deixe isso claro para o candidato antes de ativar. O CPF e o nome nunca são enviados por estas chamadas.
+const AI_CHAT_URL = '';
+const AI_VISION_URL = '';
+
+// =====================================================================
+// UTILITÁRIOS
+// =====================================================================
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const norm = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
 // ---- BADGE DE REVISÃO (mês/ano atual, sempre atualizado) ----
 (function atualizarBadgeRevisao() {
   const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const agora = new Date();
-  const badge = document.getElementById('header-badge');
+  const badge = $('header-badge');
   if (badge) badge.textContent = `Revisão · ${meses[agora.getMonth()]} ${agora.getFullYear()}`;
 })();
-
-// ---- E-MAIL DO RH ----
-const RH_EMAIL = 'admissaorefricon@gmail.com';
-
-function getMailtoLink() {
-  const assunto = `Documentos Admissionais - ${nomeFunc || 'Candidato'}`;
-  const corpo = `Olá! Sou ${nomeFunc || 'candidato(a)'}, meu CPF é ${cpfFunc || ''} e meu telefone é ${telefoneFunc || ''}. Segue em anexo a pasta com meus documentos admissionais.`;
-  return `mailto:${RH_EMAIL}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
-}
 
 const DOCS = [
   // Documentos da empresa
@@ -754,30 +982,459 @@ const DOCS = [
     help: 'Opcional: certificados de cursos livres, técnicos ou profissionalizantes que você já concluiu. Ajuda a enriquecer seu cadastro, mas não é obrigatório.' },
 ];
 
-const uploaded = {};
+// =====================================================================
+// ESTADO
+// =====================================================================
+const uploaded = {};    // id -> File[] (sessão atual)
+const quality = {};     // id -> [{status, notes}] alinhado com uploaded[id]
+const savedNames = {};  // id -> string[] (nomes; vem do localStorage e da sessão)
+let justif = {};        // id -> { motivo, dias, obs, quando }
+let reports = [];       // relatos de dificuldade feitos pelo chat
 let nomeFunc = '';
 let cpfFunc = '';
 let telefoneFunc = '';
 let sexoFunc = '';
+let lastCpf = '';
 
 // retorna só os documentos que se aplicam à pessoa (ex: reservista some para mulheres)
 function docsAtivos() {
   return DOCS.filter(d => !d.onlyFor || d.onlyFor === sexoFunc);
 }
+const hasDoc = id => (savedNames[id] || []).length > 0;
 
 // ---- ÍCONES SVG ----
 const iconFile = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 3h7l4 4v10a1 1 0 01-1 1H5a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="#9B9890" stroke-width="1.5"/><path d="M12 3v4h4" stroke="#9B9890" stroke-width="1.5" stroke-linecap="round"/><path d="M7 9h6M7 12h4" stroke="#9B9890" stroke-width="1.5" stroke-linecap="round"/></svg>`;
 const iconCheck = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" stroke="#1A6636" stroke-width="1.5"/><path d="M7 10l2.5 2.5L13 8" stroke="#1A6636" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const iconClock = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" stroke="#8A5A00" stroke-width="1.5"/><path d="M10 6v4l2.5 1.6" stroke="#8A5A00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const iconUpload = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 14V5M6 8l4-4 4 4M4 16h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-// ---- STEP CONTROL ----
-const nomeInput = document.getElementById('nome-input');
-const cpfInput = document.getElementById('cpf-input');
-const telefoneInput = document.getElementById('telefone-input');
-const sexoInput = document.getElementById('sexo-input');
-const btnContinuar = document.getElementById('btn-continuar');
-const btnVoltar = document.getElementById('btn-voltar');
-const btnBaixar = document.getElementById('btn-baixar');
+// =====================================================================
+// JUSTIFICATIVA: "NÃO CONSIGO ENVIAR EM 24H"
+// =====================================================================
+const JUST_MOTIVOS = {
+  perdi:         'Perdi o documento e preciso tirar a 2ª via',
+  outra_pessoa:  'O documento está com outra pessoa',
+  nao_tenho:     'Ainda não tenho, preciso providenciar',
+  sem_foto:      'Não estou conseguindo uma foto legível agora',
+  outro:         'Outro motivo (explico abaixo)'
+};
+const JUST_DIAS = [
+  { v: '2',  t: 'Em até 2 dias' },
+  { v: '3',  t: 'Em até 3 dias' },
+  { v: '5',  t: 'Em até 5 dias' },
+  { v: '7',  t: 'Em até 7 dias' },
+  { v: '15', t: 'Em até 15 dias' },
+  { v: '0',  t: 'Ainda não sei' }
+];
+
+function justPrevisao(j) {
+  if (!j || !j.dias) return '';
+  return new Date(j.quando + j.dias * 86400000).toLocaleDateString('pt-BR');
+}
+
+function justFormHTML(id) {
+  return `
+    <div class="just-title">Não vai conseguir enviar este documento em 24h?</div>
+    <label for="just-motivo-${id}">Motivo</label>
+    <select id="just-motivo-${id}">
+      <option value="">Selecione o motivo</option>
+      ${Object.entries(JUST_MOTIVOS).map(([k, t]) => `<option value="${k}">${esc(t)}</option>`).join('')}
+    </select>
+    <label for="just-dias-${id}">Em quanto tempo você consegue entregar?</label>
+    <select id="just-dias-${id}">
+      ${JUST_DIAS.map(d => `<option value="${d.v}">${esc(d.t)}</option>`).join('')}
+    </select>
+    <label for="just-obs-${id}">Quer explicar melhor? (opcional)</label>
+    <textarea id="just-obs-${id}" rows="2" maxlength="300" placeholder="Ex.: pedi a 2ª via no cartório e sai na quinta."></textarea>
+    <div class="just-note">O RH recebe este aviso junto com a sua pasta. Você pode desfazer depois, se conseguir o documento.</div>
+    <div class="row-btns">
+      <button type="button" class="mini-btn primary" data-act="just-ok" data-id="${id}">Confirmar aviso</button>
+      <button type="button" class="mini-btn" data-act="just-cancel" data-id="${id}">Cancelar</button>
+    </div>`;
+}
+
+function openJustify(id) {
+  const form = $('just-form-' + id);
+  if (!form) return;
+  form.hidden = false;
+  const btn = $('just-open-' + id);
+  if (btn) btn.hidden = true;
+  form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelJustify(id) {
+  const form = $('just-form-' + id);
+  if (form) form.hidden = true;
+  refreshItem(id);
+}
+
+function confirmJustify(id) {
+  const motivo = $('just-motivo-' + id).value;
+  if (!motivo) {
+    $('just-motivo-' + id).focus();
+    alert('Escolha o motivo para continuar.');
+    return;
+  }
+  justif[id] = {
+    motivo,
+    dias: parseInt($('just-dias-' + id).value, 10) || 0,
+    obs: $('just-obs-' + id).value.trim(),
+    quando: Date.now()
+  };
+  $('just-form-' + id).hidden = true;
+  saveProgress();
+  refreshItem(id);
+  updateStats();
+}
+
+function undoJustify(id) {
+  delete justif[id];
+  saveProgress();
+  refreshItem(id);
+  updateStats();
+}
+
+function justSummaryLines() {
+  return docsAtivos()
+    .filter(d => d.required && !hasDoc(d.id) && justif[d.id])
+    .map(d => {
+      const j = justif[d.id];
+      let l = `${d.name}: ${JUST_MOTIVOS[j.motivo] || j.motivo}`;
+      l += j.dias ? ` — previsão de entrega: ${justPrevisao(j)}` : ' — sem previsão definida';
+      if (j.obs) l += ` — "${j.obs}"`;
+      return l;
+    });
+}
+
+// =====================================================================
+// CHECAGEM DE LEGIBILIDADE DAS FOTOS
+// (roda no próprio aparelho — nada é enviado a lugar nenhum, a menos que AI_VISION_URL esteja preenchido)
+// =====================================================================
+const QUALITY_RULES = {
+  default:  { minShort: 600, minLong: 900, darkFail: 45, darkWarn: 75, sharpFail: 14, sharpWarn: 26, contrastFail: 18 },
+  foto_3x4: { minShort: 240, minLong: 300, darkFail: 35, darkWarn: 60, sharpFail: 8,  sharpWarn: 14, contrastFail: 12 }
+};
+
+// Recebe os pixels RGBA (já reduzidos) e devolve métricas simples.
+function analyzePixels(data, w, h) {
+  const n = w * h;
+  const gray = new Float32Array(n);
+  let sum = 0;
+  for (let i = 0, j = 0; i < n; i++, j += 4) {
+    const g = 0.299 * data[j] + 0.587 * data[j + 1] + 0.114 * data[j + 2];
+    gray[i] = g;
+    sum += g;
+  }
+  const mean = sum / n;
+  let vs = 0;
+  for (let i = 0; i < n; i++) { const d = gray[i] - mean; vs += d * d; }
+  const std = Math.sqrt(vs / n);
+
+  // nitidez: percentil 99 da magnitude do gradiente (texto nítido = bordas fortes)
+  const hist = new Uint32Array(256);
+  let cnt = 0;
+  for (let y = 1; y < h - 1; y++) {
+    for (let x = 1; x < w - 1; x++) {
+      const i = y * w + x;
+      const gx = gray[i + 1] - gray[i - 1];
+      const gy = gray[i + w] - gray[i - w];
+      let m = Math.sqrt(gx * gx + gy * gy) | 0;
+      if (m > 255) m = 255;
+      hist[m]++;
+      cnt++;
+    }
+  }
+  let acc = 0, p99 = 0;
+  const target = cnt * 0.99;
+  for (let b = 0; b < 256; b++) { acc += hist[b]; if (acc >= target) { p99 = b; break; } }
+  return { mean, std, p99 };
+}
+
+function judgePixels(m, rule) {
+  const fail = [], warn = [];
+  if (m.mean < rule.darkFail) fail.push('A foto está muito escura. Tire de novo num lugar bem iluminado (de preferência luz natural).');
+  else if (m.mean < rule.darkWarn) warn.push('A foto está um pouco escura. Se der, tire de novo com mais luz.');
+  if (m.std < rule.contrastFail) fail.push('A imagem está com quase nenhum contraste — o texto provavelmente não dá para ler. Verifique se o documento aparece inteiro e com boa luz.');
+  if (m.p99 < rule.sharpFail) fail.push('A foto está borrada / fora de foco. Segure o celular firme, toque na tela para focar no documento e tire de novo.');
+  else if (m.p99 < rule.sharpWarn) warn.push('A foto parece levemente desfocada. Confira se dá para ler todas as letras e números.');
+  return { fail, warn };
+}
+
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('decode')); };
+    img.src = url;
+  });
+}
+
+async function aiVision(canvas, doc) {
+  if (!AI_VISION_URL) return null;
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 20000);
+    const r = await fetch(AI_VISION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ documento: doc.name, imagem: canvas.toDataURL('image/jpeg', 0.82) }),
+      signal: ctrl.signal
+    });
+    clearTimeout(t);
+    if (!r.ok) return null;
+    const j = await r.json();
+    return { legivel: !!j.legivel, tipoCorreto: j.tipo_correto === undefined ? null : !!j.tipo_correto, motivo: String(j.motivo || '') };
+  } catch { return null; }
+}
+
+// devolve { status: 'ok' | 'warn' | 'fail' | 'skip', notes: [] }
+async function checkFile(file, doc) {
+  const nome = file.name.toLowerCase();
+  if (file.size === 0) return { status: 'fail', notes: ['O arquivo está vazio (0 KB). Escolha o arquivo de novo.'] };
+
+  const isImg = (file.type || '').startsWith('image/') || /\.(jpe?g|png|webp|heic|heif)$/.test(nome);
+  if (!isImg) {
+    if (/\.pdf$/.test(nome) || file.type === 'application/pdf') {
+      const r = await readAndJudgePdf(file, doc);
+      if (r) return r;
+      return { status: 'skip', notes: ['PDF: não consegui conferir a legibilidade automaticamente — confira se abre e dá para ler.'] };
+    }
+    return { status: 'skip', notes: [] };
+  }
+
+  let img;
+  try { img = await loadImage(file); }
+  catch { return { status: 'skip', notes: ['Não consegui abrir esta imagem para conferir a qualidade (formato não suportado neste navegador).'] }; }
+
+  const w = img.naturalWidth, h = img.naturalHeight;
+  const rule = QUALITY_RULES[doc.id] || QUALITY_RULES.default;
+  const fail = [], warn = [];
+  if (Math.min(w, h) < rule.minShort || Math.max(w, h) < rule.minLong) {
+    fail.push(`A imagem é muito pequena (${w}×${h}). Tire uma foto nova pela câmera, sem reduzir o tamanho.`);
+  }
+
+  const scale = Math.min(1, 1200 / Math.max(w, h));
+  const cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = cw; canvas.height = ch;
+  let metrics = null;
+  try {
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, cw, ch);
+    metrics = analyzePixels(ctx.getImageData(0, 0, cw, ch).data, cw, ch);
+  } catch { /* sem canvas: segue só com a checagem de tamanho */ }
+
+  if (metrics) {
+    const v = judgePixels(metrics, rule);
+    fail.push(...v.fail);
+    warn.push(...v.warn);
+  }
+
+  if (fail.length === 0) {
+    const ocr = await readAndJudgeImage(img, doc);
+    if (ocr) {
+      if (ocr.status === 'fail') fail.push(...ocr.notes);
+      else if (ocr.status === 'warn') warn.push(...ocr.notes);
+    }
+  }
+
+  if (fail.length === 0) {
+    const ai = await aiVision(canvas, doc);
+    if (ai && !ai.legivel) fail.push(ai.motivo || 'A verificação automática não conseguiu ler o texto desta imagem. Tire outra foto, mais de perto e com boa luz.');
+    else if (ai && ai.tipoCorreto === false) fail.push(ai.motivo || `Este arquivo não parece ser "${doc.name}". Confira se anexou o documento certo.`);
+  }
+
+  if (fail.length) return { status: 'fail', notes: fail };
+  if (warn.length) return { status: 'warn', notes: warn };
+  return { status: 'ok', notes: [] };
+}
+
+const QUALITY_TIPS = [
+  'Use luz natural ou um lugar bem iluminado, sem flash direto no documento (ele cria reflexo).',
+  'Apoie o documento numa superfície lisa e escura, com os 4 cantos aparecendo.',
+  'Segure o celular firme, toque na tela para focar e espere 1–2 segundos antes de tirar.',
+  'Para documentos digitais (CNH, e-Título, CTPS digital), tire um print da tela em vez de uma foto da tela.'
+];
+
+
+// =====================================================================
+// LEITURA DO DOCUMENTO (OCR no próprio aparelho) — confere se dá para ler e se é o documento certo
+// Nada sai do aparelho: a leitura roda no navegador. As bibliotecas só são baixadas no primeiro envio.
+// =====================================================================
+const TESS_SRC  = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+const TESS_LANG = 'https://cdn.jsdelivr.net/npm/@tesseract.js-data/por/4.0.0_best_int';
+const PDFJS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+const PDFJS_WORKER = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// Palavras que aparecem no documento (sem acento, minúsculas; são expressões regulares).
+// min = quantas precisam aparecer. Documentos fora da lista (foto 3x4, cursos) só passam pela checagem de imagem.
+const KW_RG   = ['registro geral','carteira de identidade','cedula de identidade','secretaria de seguranca','instituto de identificacao','filiacao','naturalidade','doc\\.? origem','assinatura do (diretor|titular)','impressao digital','polegar','\\bregistro nacional\\b','\\bcin\\b'];
+const KW_CPF  = ['cadastro de pessoas fisicas','\\bcpf\\b','receita federal','ministerio da fazenda','situacao cadastral','comprovante de inscricao'];
+const KW_CERT = ['certidao','registro civil','casamento','cartorio','oficial de registro','uniao estavel'];
+const DOC_CHECK = {
+  curriculo:           { min: 2, minWords: 10, kw: ['curriculo','experiencia','formacao','objetivo','habilidades','idiomas','qualificac','escolaridade','telefone','e-?mail','nascimento','cursos','profissional'] },
+  ctps:                { min: 1, kw: ['carteira de trabalho','\\bctps\\b','contrato de trabalho','ministerio do trabalho','empregador','qualificacao civil','data de admissao','\\bcargo\\b','remuneracao','previdencia social','carteira digital'] },
+  rg:                  { min: 1, kw: KW_RG },
+  cpf:                 { min: 1, minWords: 5, kw: KW_CPF },
+  reservista:          { min: 1, kw: ['reservista','certificado de dispensa','dispensa de incorporacao','servico militar','exercito','alistamento','junta de servico','forcas armadas'] },
+  pis:                 { min: 1, minWords: 5, kw: ['\\bpis\\b','pasep','\\bnis\\b','\\bnit\\b','cadastramento','caixa economica','cidadao','\\bfgts\\b','inscricao social'] },
+  titulo_eleitor:      { min: 1, kw: ['titulo de eleitor','titulo eleitoral','justica eleitoral','tribunal superior eleitoral','tribunal regional eleitoral','\\beleitor','e-?titulo','\\bzona\\b','\\bsecao\\b'] },
+  cnh:                 { min: 1, kw: ['habilitacao','\\bcnh\\b','denatran','detran','contran','carteira nacional','permissao para dirigir','\\bcategoria\\b','renach'] },
+  certidao:            { min: 1, kw: KW_CERT },
+  cpf_rg_conjuge:      { min: 1, kw: KW_RG.concat(KW_CPF) },
+  certidao_filho:      { min: 1, kw: KW_CERT },
+  escolaridade_filho:  { min: 1, kw: ['matricula','escola','frequencia','declaracao','\\baluno','\\bserie\\b','\\bano\\b','ensino','colegio','secretaria'] },
+  vacinacao_filho:     { min: 1, kw: ['vacina','imunizacao','caderneta','\\bsus\\b','ministerio da saude','\\bdose','\\blote\\b','conecte','crianca'] },
+  comprovante_endereco:{ min: 2, kw: ['fatura','\\bconta\\b','energia','\\bagua\\b','vencimento','consumo','\\bcep\\b','endereco','\\brua\\b','avenida','\\bkwh\\b','telefone','internet','residencia','boleto','cliente','unidade consumidora','instalacao','\\bnota fiscal','esgoto','gas'] },
+  conta_bancaria:      { min: 2, kw: ['bradesco','santander','\\bitau','agencia','\\bconta\\b','\\bbanco\\b','conta super','cartao','\\bag\\b','\\bc/c\\b','correntista','titular'] },
+  escolaridade:        { min: 1, kw: ['certificado','diploma','historico','conclusao','\\bensino','escola','colegio','universidade','faculdade','declaracao','concluiu','\\bcurso','boletim','secretaria da educacao','\\bmedio\\b','fundamental'] }
+};
+
+function countWordsOK(words) {
+  return (words || []).filter(w => (w.confidence == null || w.confidence >= 60) && /[a-zà-ÿ]{3,}/i.test(w.text || '')).length;
+}
+
+// Decide: ok / warn / fail a partir do texto lido. Função pura (sem navegador).
+function judgeText(text, wordsOK, doc) {
+  const rule = DOC_CHECK[doc.id];
+  if (!rule) return { status: 'ok', notes: [] };
+  const minWords = rule.minWords || 8;
+  if (wordsOK < minWords) {
+    return { status: 'fail', notes: ['Não consegui ler o texto deste documento. Tire outra foto mais de perto, com boa luz, sem reflexo, com o documento reto e inteiro na imagem (confira também se não está de lado).'] };
+  }
+  const t = norm(text);
+  const hits = rule.kw.filter(k => new RegExp(k).test(t)).length;
+  if (hits >= rule.min) return { status: 'ok', notes: [] };
+  const msg = `Este arquivo não parece ser "${doc.name}". Confira se você anexou o documento certo. Se for ele mesmo, tire outra foto com o documento inteiro aparecendo.`;
+  // leu bastante texto e nada bate → provavelmente é outro documento; leu pouco → só avisa
+  return wordsOK >= 12 ? { status: 'fail', notes: [msg] } : { status: 'warn', notes: [msg] };
+}
+
+const loadedScripts = {};
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (loadedScripts[src]) return resolve();
+    const el = document.createElement('script');
+    el.src = src;
+    el.onload = () => { loadedScripts[src] = true; resolve(); };
+    el.onerror = () => reject(new Error('load ' + src));
+    document.head.appendChild(el);
+  });
+}
+
+let ocrWorkerPromise = null;
+function getOcrWorker() {
+  if (!ocrWorkerPromise) {
+    ocrWorkerPromise = (async () => {
+      await loadScript(TESS_SRC);
+      return window.Tesseract.createWorker('por', 1, { langPath: TESS_LANG });
+    })().catch(e => { ocrWorkerPromise = null; throw e; });
+  }
+  return ocrWorkerPromise;
+}
+
+function setBusyText(docId, txt) {
+  const el = $('lbl-txt-' + docId);
+  if (el) el.textContent = txt;
+}
+
+async function ocrCanvas(canvas) {
+  const worker = await getOcrWorker();
+  const r = await worker.recognize(canvas);
+  return { text: r.data.text || '', wordsOK: countWordsOK(r.data.words) };
+}
+
+function imageToCanvas(img, maxSide) {
+  const w = img.naturalWidth, h = img.naturalHeight;
+  const scale = Math.min(1, maxSide / Math.max(w, h));
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(w * scale));
+  c.height = Math.max(1, Math.round(h * scale));
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return c;
+}
+
+// Lê o documento (imagem) e julga. Devolve null se não deu para ler por problema técnico (ex.: sem internet).
+async function readAndJudgeImage(img, doc) {
+  if (!DOC_CHECK[doc.id]) return null;
+  try {
+    setBusyText(doc.id, 'Lendo o documento…');
+    const { text, wordsOK } = await ocrCanvas(imageToCanvas(img, 1800));
+    return judgeText(text, wordsOK, doc);
+  } catch { return null; }
+}
+
+// PDF: usa o texto do próprio PDF quando existe; se for escaneado, lê a 1ª página como imagem.
+async function readAndJudgePdf(file, doc) {
+  if (!DOC_CHECK[doc.id]) return null;
+  try {
+    setBusyText(doc.id, 'Lendo o documento…');
+    await loadScript(PDFJS_SRC);
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+    const pdf = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    const page = await pdf.getPage(1);
+    const tc = await page.getTextContent();
+    const text = tc.items.map(i => i.str).join(' ');
+    const words = text.split(/\s+/).filter(w => /[a-zà-ÿ]{3,}/i.test(w));
+    if (words.length >= 15) return judgeText(text, words.length, doc);
+    const vp0 = page.getViewport({ scale: 1 });
+    const vp = page.getViewport({ scale: Math.min(3, 1800 / Math.max(vp0.width, vp0.height)) });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(vp.width); canvas.height = Math.round(vp.height);
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+    const r = await ocrCanvas(canvas);
+    return judgeText(r.text, r.wordsOK, doc);
+  } catch { return null; }
+}
+
+// =====================================================================
+// MENSAGENS POR DOCUMENTO
+// =====================================================================
+function clearMsg(id) {
+  const el = $('msg-' + id);
+  if (el) { el.hidden = true; el.innerHTML = ''; el.className = 'doc-msg'; }
+}
+
+function showMsg(id, kind, title, lines, buttons) {
+  const el = $('msg-' + id);
+  if (!el) return;
+  el.className = 'doc-msg ' + kind;
+  el.innerHTML = '';
+  const t = document.createElement('strong');
+  t.textContent = title;
+  el.appendChild(t);
+  if (lines && lines.length) {
+    const ul = document.createElement('ul');
+    lines.forEach(l => { const li = document.createElement('li'); li.textContent = l; ul.appendChild(li); });
+    el.appendChild(ul);
+  }
+  if (buttons && buttons.length) {
+    const row = document.createElement('div');
+    row.className = 'row-btns';
+    buttons.forEach(b => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'mini-btn' + (b.primary ? ' primary' : '');
+      btn.textContent = b.label;
+      btn.addEventListener('click', b.fn);
+      row.appendChild(btn);
+    });
+    el.appendChild(row);
+  }
+  el.hidden = false;
+}
+
+// =====================================================================
+// STEP CONTROL
+// =====================================================================
+const nomeInput = $('nome-input');
+const cpfInput = $('cpf-input');
+const telefoneInput = $('telefone-input');
+const sexoInput = $('sexo-input');
+const btnContinuar = $('btn-continuar');
+const btnVoltar = $('btn-voltar');
+const btnBaixar = $('btn-baixar');
 
 function formatCPF(v) {
   return v.replace(/\D/g, '').slice(0, 11)
@@ -817,53 +1474,67 @@ telefoneInput.addEventListener('input', () => {
 });
 sexoInput.addEventListener('change', checkForm);
 
+function resetSessionState() {
+  [uploaded, quality, savedNames].forEach(o => Object.keys(o).forEach(k => delete o[k]));
+  justif = {};
+  reports = [];
+}
+
 btnContinuar.addEventListener('click', () => {
   nomeFunc = nomeInput.value.trim();
   cpfFunc = cpfInput.value.trim();
   telefoneFunc = telefoneInput.value.trim();
   sexoFunc = sexoInput.value;
-  document.getElementById('step-nome').classList.remove('active');
-  document.getElementById('step-docs').classList.add('active');
-  document.getElementById('stat-total').textContent = docsAtivos().length;
-  renderDocs();
-  // carregar progresso salvo
+
+  // se mudou o CPF, não carrega nada da pessoa anterior
+  if (lastCpf && lastCpf !== cpfFunc) resetSessionState();
+  lastCpf = cpfFunc;
+
   const saved = loadProgress();
-  if (saved && saved.docs) {
-    Object.keys(saved.docs).forEach(id => {
-      if (!uploaded[id]) {
-        const val = saved.docs[id];
-        const names = Array.isArray(val) ? val : [val]; // compatibilidade com formato antigo
-        savedNames[id] = names;
-        markAsSaved(id, names);
-      }
-    });
+  if (saved) {
+    if (saved.docs) {
+      Object.keys(saved.docs).forEach(id => {
+        if (!uploaded[id]) {
+          const val = saved.docs[id];
+          savedNames[id] = Array.isArray(val) ? val : [val]; // compatibilidade com formato antigo
+        }
+      });
+    }
+    justif = saved.justif || {};
+    reports = saved.reports || [];
   }
+
+  $('step-nome').classList.remove('active');
+  $('step-docs').classList.add('active');
+  $('stat-total').textContent = docsAtivos().length;
+  renderDocs();
   ensureDeadline(saved);
   updateStats();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 btnVoltar.addEventListener('click', () => {
-  document.getElementById('step-docs').classList.remove('active');
-  document.getElementById('step-nome').classList.add('active');
+  $('step-docs').classList.remove('active');
+  $('step-nome').classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 document.addEventListener('click', e => {
   if (e.target.id === 'btn-limpar') {
-    if (confirm('Tem certeza? Isso vai apagar o registro dos documentos já enviados para este CPF.')) {
+    if (confirm('Tem certeza? Isso vai apagar o registro dos documentos já enviados e as justificativas deste CPF.')) {
       clearProgress();
-      Object.keys(savedNames).forEach(k => delete savedNames[k]);
-      Object.keys(uploaded).forEach(k => delete uploaded[k]);
+      resetSessionState();
       renderDocs();
       updateStats();
     }
   }
 });
 
-// ---- RENDER DOCS ----
+// =====================================================================
+// RENDER DOCS
+// =====================================================================
 function renderDocs() {
-  const list = document.getElementById('doc-list');
+  const list = $('doc-list');
   list.innerHTML = '';
   let lastSection = '';
 
@@ -900,6 +1571,7 @@ function renderDocs() {
           </label>
         </div>
       </div>
+      <div class="doc-msg" id="msg-${doc.id}" hidden></div>
       <div class="file-chips" id="chips-${doc.id}"></div>
       ${doc.help ? `
       <button type="button" class="help-toggle" id="help-toggle-${doc.id}">
@@ -909,30 +1581,108 @@ function renderDocs() {
       </button>
       <div class="help-panel" id="help-panel-${doc.id}">${doc.help}</div>
       ` : ''}
+      ${doc.required ? `<button type="button" class="link-btn" id="just-open-${doc.id}" data-act="just-open" data-id="${doc.id}">Não consigo enviar em 24h</button>` : ''}
+      <div class="just-form" id="just-form-${doc.id}" hidden>${doc.required ? justFormHTML(doc.id) : ''}</div>
+      <div class="doc-msg warn" id="just-note-${doc.id}" hidden></div>
     `;
     list.appendChild(item);
-    document.getElementById('file-' + doc.id).addEventListener('change', e => handleFile(e, doc));
+    $('file-' + doc.id).addEventListener('change', e => handleFile(e, doc));
     if (doc.help) {
-      const toggleBtn = document.getElementById('help-toggle-' + doc.id);
-      const panel = document.getElementById('help-panel-' + doc.id);
+      const toggleBtn = $('help-toggle-' + doc.id);
+      const panel = $('help-panel-' + doc.id);
       toggleBtn.addEventListener('click', () => {
         toggleBtn.classList.toggle('open');
         panel.classList.toggle('open');
       });
     }
+    refreshItem(doc.id);
   });
 }
 
-// ---- PERSISTÊNCIA ----
+// um único lugar que sincroniza a aparência de cada documento com o estado
+function refreshItem(id) {
+  const item = $('item-' + id);
+  const doc = DOCS.find(d => d.id === id);
+  if (!item || !doc) return;
+  const names = savedNames[id] || [];
+  const has = names.length > 0;
+  const j = justif[id];
+  const justified = !has && !!j && doc.required;
+
+  item.classList.toggle('done', has);
+  item.classList.toggle('justified', justified);
+  $('icon-' + id).innerHTML = has ? iconCheck : (justified ? iconClock : iconFile);
+
+  const badge = $('badge-' + id);
+  if (has) { badge.className = 'badge badge-done'; badge.textContent = doc.multiFile ? `Enviado (${names.length})` : 'Enviado'; }
+  else if (justified) { badge.className = 'badge badge-just'; badge.textContent = 'Justificado'; }
+  else { badge.className = 'badge ' + (doc.required ? 'badge-required' : 'badge-optional'); badge.textContent = doc.required ? 'Obrigatório' : 'Opcional'; }
+
+  $('lbl-txt-' + id).textContent = docLabel(doc, names.length);
+
+  const q = quality[id] || [];
+  const mark = s => s === 'ok' ? '✓ ' : (s === 'warn' ? '⚠ ' : '');
+  $('fname-' + id).textContent = doc.multiFile ? '' : (names[0] ? mark(q[0] && q[0].status) + names[0] : '');
+  renderChips(id, names);
+
+  // botão / formulário / aviso de justificativa
+  const openBtn = $('just-open-' + id);
+  const form = $('just-form-' + id);
+  const note = $('just-note-' + id);
+  if (openBtn) openBtn.hidden = has || justified || (form && !form.hidden);
+  if (form && (has || justified)) form.hidden = true;
+  if (note) {
+    if (justified) {
+      note.hidden = false;
+      note.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = 'Aviso registrado: ';
+      note.appendChild(strong);
+      let txt = (JUST_MOTIVOS[j.motivo] || j.motivo) + '.';
+      txt += j.dias ? ` Você informou que entrega até ${justPrevisao(j)}.` : ' Sem previsão definida.';
+      if (j.obs) txt += ` "${j.obs}"`;
+      note.appendChild(document.createTextNode(txt));
+      const row = document.createElement('div');
+      row.className = 'row-btns';
+      const undo = document.createElement('button');
+      undo.type = 'button'; undo.className = 'mini-btn'; undo.textContent = 'Desfazer aviso';
+      undo.dataset.act = 'just-undo'; undo.dataset.id = id;
+      row.appendChild(undo);
+      note.appendChild(row);
+    } else {
+      note.hidden = true;
+      note.innerHTML = '';
+    }
+  }
+}
+
+$('doc-list').addEventListener('click', e => {
+  const btn = e.target.closest('[data-act]');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  switch (btn.dataset.act) {
+    case 'just-open': openJustify(id); break;
+    case 'just-cancel': cancelJustify(id); break;
+    case 'just-ok': confirmJustify(id); break;
+    case 'just-undo': undoJustify(id); break;
+  }
+});
+
+// =====================================================================
+// PERSISTÊNCIA
+// =====================================================================
 function storageKey() { return 'rh_docs_' + cpfFunc.replace(/\D/g, ''); }
 
 function saveProgress() {
   const data = {};
-  Object.keys(uploaded).forEach(id => {
-    data[id] = uploaded[id].map(f => f.name);
-  });
-  // salva também nome, cpf e prazo de envio para preencher automaticamente
-  localStorage.setItem(storageKey(), JSON.stringify({ docs: data, nome: nomeFunc, cpf: cpfFunc, telefone: telefoneFunc, sexo: sexoFunc, deadline: deadlineTimestamp }));
+  Object.keys(savedNames).forEach(id => { if ((savedNames[id] || []).length) data[id] = savedNames[id]; });
+  // salva também nome, cpf, prazo, justificativas e relatos
+  try {
+    localStorage.setItem(storageKey(), JSON.stringify({
+      docs: data, nome: nomeFunc, cpf: cpfFunc, telefone: telefoneFunc, sexo: sexoFunc,
+      deadline: deadlineTimestamp, justif, reports
+    }));
+  } catch { /* armazenamento bloqueado: segue sem salvar */ }
 }
 
 function loadProgress() {
@@ -943,10 +1693,12 @@ function loadProgress() {
 }
 
 function clearProgress() {
-  localStorage.removeItem(storageKey());
+  try { localStorage.removeItem(storageKey()); } catch { /* ignore */ }
 }
 
-// ---- PRAZO DE ENVIO (24H) ----
+// =====================================================================
+// PRAZO DE ENVIO (24H)
+// =====================================================================
 const DEADLINE_HOURS = 24;
 let deadlineTimestamp = null;
 let deadlineInterval = null;
@@ -971,8 +1723,8 @@ function resetDeadline() {
 
 function updateDeadlineUI() {
   if (!deadlineTimestamp) return;
-  const card = document.getElementById('deadline-card');
-  const valueEl = document.getElementById('deadline-value');
+  const card = $('deadline-card');
+  const valueEl = $('deadline-value');
   const diff = deadlineTimestamp - Date.now();
 
   if (diff <= 0) {
@@ -993,11 +1745,9 @@ function updateDeadlineUI() {
   card.className = 'deadline-card ' + state;
 }
 
-// mapeamento de arquivos já enviados na sessão atual
-// uploaded[id] = array de File objects (mesmo para documentos de arquivo único)
-// savedNames[id] = array de nomes de arquivo — vem do localStorage
-const savedNames = {};
-
+// =====================================================================
+// ARQUIVOS
+// =====================================================================
 function docLabel(doc, count) {
   if (doc.multiFile) {
     return count === 0 ? 'Anexar' : `Anexar mais (${count})`;
@@ -1006,14 +1756,15 @@ function docLabel(doc, count) {
 }
 
 function renderChips(id, names) {
-  const box = document.getElementById('chips-' + id);
+  const box = $('chips-' + id);
   if (!box) return;
   const doc = DOCS.find(d => d.id === id);
   if (!doc.multiFile || names.length === 0) { box.innerHTML = ''; return; }
+  const q = quality[id] || [];
   box.innerHTML = names.map((n, i) => `
     <div class="file-chip">
-      <span>📎 ${n}</span>
-      <button type="button" data-id="${id}" data-idx="${i}" class="remove-chip">✕</button>
+      <span>${q[i] && q[i].status === 'ok' ? '✓' : (q[i] && q[i].status === 'warn' ? '⚠' : '📎')} ${esc(n)}</span>
+      <button type="button" data-id="${id}" data-idx="${i}" class="remove-chip" aria-label="Remover arquivo">✕</button>
     </div>
   `).join('');
   box.querySelectorAll('.remove-chip').forEach(btn => {
@@ -1021,118 +1772,157 @@ function renderChips(id, names) {
   });
 }
 
-function markAsSaved(id, names) {
-  savedNames[id] = names;
-  const item = document.getElementById('item-' + id);
-  if (!item) return;
-  const doc = DOCS.find(d => d.id === id);
-  const count = names.length;
-  if (count > 0) {
-    item.classList.add('done');
-    document.getElementById('icon-' + id).innerHTML = iconCheck;
-    const badge = document.getElementById('badge-' + id);
-    badge.className = 'badge badge-done';
-    badge.textContent = doc.multiFile ? `Enviado (${count})` : 'Enviado';
-  }
-  document.getElementById('lbl-txt-' + id).textContent = docLabel(doc, count);
-  document.getElementById('fname-' + id).textContent = doc.multiFile ? '' : (names[0] || '');
-  renderChips(id, names);
-}
-
 function removeFile(id, idx) {
   if (uploaded[id]) uploaded[id].splice(idx, 1);
+  if (quality[id]) quality[id].splice(idx, 1);
   if (savedNames[id]) savedNames[id].splice(idx, 1);
-  const names = (uploaded[id] || []).map(f => f.name);
-  if (names.length === 0) {
-    delete uploaded[id];
+  if (!savedNames[id] || savedNames[id].length === 0) {
     delete savedNames[id];
-    const item = document.getElementById('item-' + id);
-    if (item) {
-      item.classList.remove('done');
-      document.getElementById('icon-' + id).innerHTML = iconFile;
-      const doc = DOCS.find(d => d.id === id);
-      const badge = document.getElementById('badge-' + id);
-      badge.className = 'badge ' + (doc.required ? 'badge-required' : 'badge-optional');
-      badge.textContent = doc.required ? 'Obrigatório' : 'Opcional';
-      document.getElementById('lbl-txt-' + id).textContent = 'Anexar';
-      document.getElementById('fname-' + id).textContent = '';
-    }
-    renderChips(id, []);
-  } else {
-    markAsSaved(id, names);
+    delete uploaded[id];
+    delete quality[id];
   }
+  clearMsg(id);
+  refreshItem(id);
   saveProgress();
   updateStats();
 }
 
-function handleFile(e, doc) {
-  const files = Array.from(e.target.files || []);
+async function handleFile(e, doc) {
+  const input = e.target;
+  const files = Array.from(input.files || []);
+  input.value = ''; // permite re-selecionar o mesmo arquivo depois
   if (files.length === 0) return;
   const id = doc.id;
 
-  if (doc.multiFile) {
-    if (!uploaded[id]) uploaded[id] = [];
-    uploaded[id] = uploaded[id].concat(files).slice(0, 6); // limite de 6 arquivos
-  } else {
-    uploaded[id] = [files[0]];
+  const lbl = $('lbl-' + id);
+  const lblTxt = $('lbl-txt-' + id);
+  lbl.classList.add('busy');
+  input.disabled = true;
+  lblTxt.textContent = 'Verificando…';
+  clearMsg(id);
+
+  const okFiles = [], okQ = [], problems = [];
+  try {
+    for (const f of files) {
+      const q = await checkFile(f, doc);
+      if (q.status === 'fail') { problems.push({ name: f.name, notes: q.notes }); continue; }
+      if (q.status === 'warn') {
+        const go = confirm(`Atenção com "${f.name}":\n\n• ${q.notes.join('\n• ')}\n\nO ideal é tirar outra foto. Quer enviar mesmo assim?`);
+        if (!go) { problems.push({ name: f.name, notes: q.notes, declined: true }); continue; }
+      }
+      okFiles.push(f);
+      okQ.push(q);
+    }
+  } finally {
+    lbl.classList.remove('busy');
+    input.disabled = false;
   }
 
-  markAsSaved(id, uploaded[id].map(f => f.name));
-  saveProgress();
+  if (okFiles.length > 0) {
+    if (doc.multiFile) {
+      uploaded[id] = (uploaded[id] || []).concat(okFiles).slice(0, 6); // limite de 6 arquivos
+      quality[id] = (quality[id] || []).concat(okQ).slice(0, 6);
+    } else {
+      uploaded[id] = [okFiles[0]];
+      quality[id] = [okQ[0]];
+    }
+    savedNames[id] = uploaded[id].map(f => f.name);
+    delete justif[id]; // enviou o documento: a justificativa deixa de valer
+    saveProgress();
+  }
+  refreshItem(id);
   updateStats();
-  e.target.value = ''; // permite re-selecionar o mesmo arquivo depois
+
+  if (problems.length > 0) {
+    const first = problems[0];
+    const extra = problems.length > 1 ? [`E mais ${problems.length - 1} arquivo(s) também não passaram na verificação.`] : [];
+    showMsg(id, 'err',
+      first.declined ? `Você não enviou "${first.name}"` : `Não consegui aceitar "${first.name}"`,
+      [...first.notes, ...extra],
+      [
+        { label: 'Tentar de novo', primary: true, fn: () => $('file-' + id).click() },
+        { label: 'Pedir ajuda', fn: () => chatOpenForDoc(id, first.notes[0]) }
+      ]);
+  } else if (okQ.some(q => q.status === 'skip' && q.notes.length)) {
+    const n = okQ.find(q => q.status === 'skip' && q.notes.length).notes[0];
+    showMsg(id, 'warn', 'Arquivo recebido', [n], []);
+  }
 }
 
+// =====================================================================
+// ESTATÍSTICAS / ALERTAS
+// =====================================================================
 function updateStats() {
-  const total = docsAtivos().length;
-  // conta enviados = tem arquivo na sessão OU foi salvo anteriormente
-  const enviadosIds = new Set([...Object.keys(uploaded), ...Object.keys(savedNames)]);
-  const enviados = enviadosIds.size;
-  const requiredMissing = docsAtivos().filter(d => d.required && !enviadosIds.has(d.id)).length;
+  const ativos = docsAtivos();
+  const total = ativos.length;
+  const enviados = ativos.filter(d => hasDoc(d.id)).length;
+  const requiredMissing = ativos.filter(d => d.required && !hasDoc(d.id) && !justif[d.id]).length;
+  const justificados = ativos.filter(d => d.required && !hasDoc(d.id) && justif[d.id]).length;
   // docs marcados como enviados antes mas sem arquivo na sessão atual (precisam reenvio para baixar)
-  const precisaReenvio = Object.keys(savedNames).filter(id => !uploaded[id]).length;
-  const pct = Math.round((enviados / total) * 100);
+  const precisaReenvio = Object.keys(savedNames).filter(id => !uploaded[id] && hasDoc(id)).length;
+  const pct = total ? Math.round((enviados / total) * 100) : 0;
 
-  document.getElementById('stat-ok').textContent = enviados;
-  document.getElementById('stat-falta').textContent = requiredMissing;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-pct').textContent = pct + '%';
-  document.getElementById('progress-label').textContent =
+  $('stat-ok').textContent = enviados;
+  $('stat-falta').textContent = requiredMissing;
+  $('stat-just').textContent = justificados;
+  $('progress-fill').style.width = pct + '%';
+  $('progress-pct').textContent = pct + '%';
+  $('progress-label').textContent =
     enviados === 0 ? 'Nenhum documento enviado ainda' :
     enviados === total ? 'Todos os documentos enviados!' :
     `${enviados} de ${total} documentos enviados`;
 
   btnBaixar.disabled = Object.keys(uploaded).length === 0;
 
-  const area = document.getElementById('alert-area');
-  if (requiredMissing === 0 && precisaReenvio === 0 && enviados > 0) {
-    area.innerHTML = `<div class="alert alert-success">
-      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2.5 2.5L13 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>Todos os documentos obrigatórios foram enviados! Baixe o arquivo ZIP e entregue ao RH.</span>
-    </div>`;
+  const area = $('alert-area');
+  const warnIcon = `<svg viewBox="0 0 20 20" fill="none"><path d="M10 3L2 17h16L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 14.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  const okIcon = `<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M7 10l2.5 2.5L13 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const pronto = requiredMissing === 0 && precisaReenvio === 0 && enviados > 0;
+
+  if (pronto) {
+    area.innerHTML = `<div class="alert alert-success">${okIcon}<span>${justificados > 0
+      ? `Tudo certo por aqui! ${justificados} documento(s) ficaram pendentes com o seu aviso — o RH recebe isso junto com a pasta.`
+      : 'Todos os documentos obrigatórios foram enviados! Baixe o arquivo ZIP e entregue ao RH.'}</span></div>`;
   } else if (precisaReenvio > 0 && requiredMissing === 0) {
-    area.innerHTML = `<div class="alert alert-warn">
-      <svg viewBox="0 0 20 20" fill="none"><path d="M10 3L2 17h16L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 14.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    area.innerHTML = `<div class="alert alert-warn">${warnIcon}
       <span><strong>${precisaReenvio}</strong> documento(s) foram enviados em sessões anteriores — clique em <strong>"Reenviar"</strong> neles para incluí-los no ZIP desta vez.</span>
     </div>`;
-  } else if (requiredMissing > 0 && enviados > 0) {
-    area.innerHTML = `<div class="alert alert-warn">
-      <svg viewBox="0 0 20 20" fill="none"><path d="M10 3L2 17h16L10 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 9v4M10 14.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <span>Ainda faltam <strong>${requiredMissing}</strong> documento(s) obrigatório(s). Você pode salvar e completar depois.</span>
+  } else if (requiredMissing > 0 && (enviados > 0 || justificados > 0)) {
+    area.innerHTML = `<div class="alert alert-warn">${warnIcon}
+      <span>Ainda faltam <strong>${requiredMissing}</strong> documento(s) obrigatório(s). Você pode salvar e completar depois — ou, se não conseguir algum em 24h, use "Não consigo enviar em 24h" no próprio documento.</span>
     </div>`;
   } else {
     area.innerHTML = '';
   }
 
-  const completionCard = document.getElementById('completion-card');
-  if (requiredMissing === 0 && precisaReenvio === 0 && enviados > 0) {
+  const completionCard = $('completion-card');
+  if (pronto) {
+    $('completion-title').textContent = justificados > 0
+      ? 'Quase lá! Seu aviso já está pronto para o RH 👍'
+      : 'Parabéns, você já concluiu 90% do processo! 🎉';
+    $('completion-sub').textContent = justificados > 0
+      ? 'Os documentos anexados e os avisos dos que não deu para enviar vão na pasta. Falta só o último passo: baixar a pasta e enviar por e-mail pro RH.'
+      : 'Todos os documentos obrigatórios foram anexados. Falta só o último passo: baixar a pasta e enviar por e-mail pro RH.';
     completionCard.classList.add('show');
   } else {
     completionCard.classList.remove('show');
   }
 }
 
-// ---- GERAÇÃO DO ZIP (compartilhada entre os botões) ----
+// =====================================================================
+// E-MAIL AO RH
+// =====================================================================
+function getMailtoLink() {
+  const assunto = `Documentos Admissionais - ${nomeFunc || 'Candidato'}`;
+  let corpo = `Olá! Sou ${nomeFunc || 'candidato(a)'}, meu CPF é ${cpfFunc || ''} e meu telefone é ${telefoneFunc || ''}. Segue em anexo a pasta com meus documentos admissionais.`;
+  const pend = justSummaryLines();
+  if (pend.length) corpo += `\n\nNão consegui enviar em 24h:\n- ${pend.join('\n- ')}`;
+  return `mailto:${RH_EMAIL}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+}
+
+// =====================================================================
+// GERAÇÃO DO ZIP (compartilhada entre os botões)
+// =====================================================================
 async function gerarZipBlob() {
   const ids = Object.keys(uploaded);
   if (ids.length === 0) return null;
@@ -1161,6 +1951,8 @@ async function gerarZipBlob() {
   index += `\n========================================\n\n`;
   index += `DOCUMENTOS ENVIADOS:\n`;
 
+  const statusTxt = { ok: 'foto conferida: legível', warn: 'ATENÇÃO: enviada com alerta de qualidade', skip: 'qualidade não conferida automaticamente', fail: 'reprovada' };
+
   for (const id of ids) {
     const files = uploaded[id];
     const docDef = DOCS.find(d => d.id === id);
@@ -1180,12 +1972,41 @@ async function gerarZipBlob() {
       nomesGerados.push(safeName);
     }
     index += `  ✓ ${docDef.name} (${files.length} arquivo${files.length > 1 ? 's' : ''}) → ${nomesGerados.join(', ')}\n`;
+    files.forEach((f, i) => {
+      const q = (quality[id] || [])[i];
+      if (q) {
+        index += `      · ${nomesGerados[i]}: ${statusTxt[q.status] || q.status}`;
+        if (q.notes && q.notes.length && q.status !== 'ok') index += ` (${q.notes.join(' ')})`;
+        index += `\n`;
+      }
+    });
   }
 
-  const missing = docsAtivos().filter(d => d.required && !uploaded[d.id]);
+  const ativos = docsAtivos();
+  const justificados = ativos.filter(d => d.required && !uploaded[d.id] && !hasDoc(d.id) && justif[d.id]);
+  if (justificados.length > 0) {
+    index += `\nNÃO CONSEGUIU ENVIAR EM 24H (com justificativa do candidato):\n`;
+    justificados.forEach(d => {
+      const j = justif[d.id];
+      index += `  ! ${d.name}\n`;
+      index += `      Motivo: ${JUST_MOTIVOS[j.motivo] || j.motivo}\n`;
+      index += `      Previsão de entrega: ${j.dias ? justPrevisao(j) : 'não informada'}\n`;
+      if (j.obs) index += `      Observação: ${j.obs}\n`;
+    });
+  }
+
+  const missing = ativos.filter(d => d.required && !uploaded[d.id] && !justif[d.id]);
   if (missing.length > 0) {
-    index += `\nDOCUMENTOS OBRIGATÓRIOS PENDENTES:\n`;
+    index += `\nDOCUMENTOS OBRIGATÓRIOS PENDENTES (sem justificativa):\n`;
     missing.forEach(d => { index += `  ✗ ${d.name}\n`; });
+  }
+
+  if (reports.length > 0) {
+    index += `\nRELATOS DE DIFICULDADE FEITOS PELO CANDIDATO:\n`;
+    reports.forEach(r => {
+      const d = DOCS.find(x => x.id === r.docId);
+      index += `  - [${new Date(r.quando).toLocaleString('pt-BR')}] ${d ? d.name : 'Geral'} — ${REPORT_MOTIVOS[r.motivo] || r.motivo}${r.texto ? ': ' + r.texto : ''}\n`;
+    });
   }
 
   folder.file('_INDICE.txt', index);
@@ -1199,8 +2020,8 @@ btnBaixar.addEventListener('click', async () => {
   const ids = Object.keys(uploaded);
   if (ids.length === 0) return;
 
-  const icon = document.getElementById('download-icon');
-  const txt = document.getElementById('btn-baixar-text');
+  const icon = $('download-icon');
+  const txt = $('btn-baixar-text');
   icon.innerHTML = `<path d="M10 3a7 7 0 110 14A7 7 0 0110 3z" stroke="currentColor" stroke-width="1.5"/><path d="M10 3a7 7 0 017 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="spin"/>`;
   txt.textContent = 'Compactando...';
   btnBaixar.disabled = true;
@@ -1226,9 +2047,9 @@ btnBaixar.addEventListener('click', async () => {
 });
 
 // ---- BAIXAR PASTA + ABRIR E-MAIL (botão de conclusão) ----
-const btnWhatsapp = document.getElementById('btn-whatsapp');
+const btnWhatsapp = $('btn-whatsapp');
 btnWhatsapp.addEventListener('click', async () => {
-  const txt = document.getElementById('btn-whatsapp-text');
+  const txt = $('btn-whatsapp-text');
   btnWhatsapp.disabled = true;
   txt.textContent = 'Gerando pasta...';
 
@@ -1255,11 +2076,323 @@ btnWhatsapp.addEventListener('click', async () => {
   } catch (err) {
     console.error('Erro ao gerar ZIP:', err);
     alert('Ocorreu um erro ao gerar o arquivo. Tente novamente.');
+  } finally {
+    txt.textContent = 'Baixar pasta e abrir e-mail do RH';
+    btnWhatsapp.disabled = false;
+  }
+});
+
+// =====================================================================
+// CHAT DE AJUDA
+// =====================================================================
+const REPORT_MOTIVOS = {
+  anexar:  'Não consigo anexar o arquivo',
+  foto:    'A foto foi recusada / não fica legível',
+  sem_doc: 'Não tenho o documento',
+  como:    'Não sei como conseguir o documento',
+  prazo:   'Não consigo entregar em 24h',
+  outro:   'Outro problema'
+};
+
+const chatFab = $('chat-fab');
+const chatPanel = $('chat-panel');
+const chatLog = $('chat-log');
+const chatInput = $('chat-input');
+const chatHistory = [];
+let chatStarted = false;
+
+function chatOpen() {
+  chatPanel.hidden = false;
+  chatFab.hidden = true;
+  chatFab.setAttribute('aria-expanded', 'true');
+  if (!chatStarted) {
+    chatStarted = true;
+    botSay('Oi! Eu ajudo com as dúvidas sobre os documentos. Se algo estiver te impedindo de enviar — arquivo que não anexa, foto recusada, documento que você não tem — me conta o que está acontecendo e eu te digo como seguir.',
+      [{ label: 'Falar com o RH', fn: () => openReportForm() }]);
+  }
+  setTimeout(() => chatInput.focus(), 50);
+}
+function chatClose() {
+  chatPanel.hidden = true;
+  chatFab.hidden = false;
+  chatFab.setAttribute('aria-expanded', 'false');
+}
+chatFab.addEventListener('click', chatOpen);
+$('chat-close').addEventListener('click', chatClose);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !chatPanel.hidden) chatClose(); });
+
+function scrollChat() { chatLog.scrollTop = chatLog.scrollHeight; }
+
+function addMsg(who, text) {
+  const d = document.createElement('div');
+  d.className = 'chat-msg ' + who;
+  d.textContent = text;
+  chatLog.appendChild(d);
+  scrollChat();
+  return d;
+}
+
+function addActions(list) {
+  if (!list || !list.length) return;
+  const w = document.createElement('div');
+  w.className = 'chat-actions';
+  list.forEach(a => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chat-action';
+    b.textContent = a.label;
+    b.addEventListener('click', () => { w.remove(); a.fn(); });
+    w.appendChild(b);
+  });
+  chatLog.appendChild(w);
+  scrollChat();
+}
+
+function botSay(text, actions) {
+  addMsg('bot', text);
+  chatHistory.push({ role: 'assistant', content: text });
+  addActions(actions);
+}
+
+const QUICK = [
+  ['Não consigo anexar', 'não consigo anexar o documento'],
+  ['Minha foto foi recusada', 'minha foto foi recusada, não está legível'],
+  ['Não tenho um documento', 'não tenho um documento'],
+  ['Não consigo em 24h', 'não vou conseguir enviar em 24h'],
+  ['Como envio o ZIP?', 'como envio o zip para o rh'],
+  ['Falar com o RH', 'quero falar com o rh']
+];
+QUICK.forEach(([label, text]) => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'chat-chip';
+  b.textContent = label;
+  b.addEventListener('click', () => chatUser(text, label));
+  $('chat-chips').appendChild(b);
+});
+
+$('chat-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const t = chatInput.value.trim();
+  if (!t) return;
+  chatInput.value = '';
+  chatUser(t);
+});
+
+// ---- detecção de documento e intenção ----
+const DOC_MATCHERS = [
+  ['cpf_rg_conjuge',     /conjuge|esposa|esposo|marido/],
+  ['vacinacao_filho',    /vacina/],
+  ['escolaridade_filho', /((escolar|escola|matricula).*filh)|(filh.*(escolar|escola|matricula))/],
+  ['certidao_filho',     /filh/],
+  ['certidao',           /certidao|casamento|uniao estavel|nascimento/],
+  ['ctps',               /ctps|carteira de trabalho|carteira digital de trabalho/],
+  ['rg',                 /\brg\b|identidade/],
+  ['cpf',                /\bcpf\b/],
+  ['reservista',         /reservista|militar|alistamento|exercito/],
+  ['pis',                /\bpis\b|pasep/],
+  ['titulo_eleitor',     /titulo|eleitor|e-?titulo/],
+  ['cnh',                /\bcnh\b|habilita|motorista/],
+  ['comprovante_endereco', /endereco|conta de (luz|agua)|residencia/],
+  ['foto_3x4',           /3x4|foto 3|foto de rosto/],
+  ['conta_bancaria',     /banco|conta bancaria|bradesco|santander|itau|agencia/],
+  ['escolaridade',       /escolaridade|diploma|historico escolar|certificado de (ensino|conclusao)/],
+  ['cursos',             /curso/],
+  ['curriculo',          /curriculo|\bcv\b/]
+];
+const INTENTS = {
+  humano:   /\brh\b|humano|atendente|pessoa|falar com|ligar|telefone do|ajuda de alguem/,
+  prazo:    /24 ?h|prazo|atras|vencer|vence|expir|tempo (acabou|esgot)|nao (vou )?(consigo|da) (a tempo|no prazo|entregar)/,
+  sem_doc:  /nao tenho|perdi|extravi|roubaram|roubado|nao acho|nao encontro|nao possuo|nunca tive|sem o documento|2a via|segunda via/,
+  qualidade:/recusad|legivel|borrad|escur|nitid|desfoc|qualidade|reprovad|pequena|resolucao|foto (nao|esta)/,
+  upload:   /anex|upload|subir|enviar (o )?(arquivo|foto|documento)|nao (abre|carrega|sobe|envia|aparece)|erro|travou|travando|bug|nao funciona|arquivo (grande|pesado)|formato/,
+  zip:      /\bzip\b|baixar|download|pasta|e-?mail|email|mandar pro rh|enviar pro rh|finalizar|concluir/
+};
+
+function detectDoc(t) {
+  const hit = DOC_MATCHERS.find(([, rx]) => rx.test(t));
+  return hit ? DOCS.find(d => d.id === hit[0]) : null;
+}
+
+function scrollToDoc(id) {
+  const it = $('item-' + id);
+  if (!it) return false;
+  if (window.innerWidth <= 480) chatClose();
+  it.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return true;
+}
+
+function docActions(doc) {
+  const actions = [];
+  const stepOn = $('step-docs').classList.contains('active');
+  if (doc && stepOn && docsAtivos().includes(doc)) {
+    actions.push({ label: 'Ir para esse documento', fn: () => scrollToDoc(doc.id) });
+    if (doc.required && !hasDoc(doc.id) && !justif[doc.id]) {
+      actions.push({ label: 'Não consigo em 24h', fn: () => { scrollToDoc(doc.id); openJustify(doc.id); } });
+    }
+  }
+  actions.push({ label: 'Avisar o RH', fn: () => openReportForm(doc ? { docId: doc.id } : {}) });
+  return actions;
+}
+
+function localReply(raw) {
+  const t = norm(raw);
+  const doc = detectDoc(t);
+  const has = k => INTENTS[k].test(t);
+  const stepOn = $('step-docs').classList.contains('active');
+
+  if (doc && !docsAtivos().includes(doc) && stepOn) {
+    return { text: `O documento "${doc.name}" não se aplica ao seu cadastro (ele só aparece conforme o sexo informado no início). Se achar que errou, volte e corrija essa informação.`, actions: [{ label: 'Avisar o RH', fn: () => openReportForm() }] };
   }
 
-  txt.textContent = 'Baixar pasta e abrir e-mail do RH';
-  btnWhatsapp.disabled = false;
-});
+  if (has('humano')) {
+    return { text: 'Claro. Vou montar um aviso para o RH com o que está acontecendo — assim você não precisa explicar de novo.', actions: [{ label: 'Preencher aviso ao RH', fn: () => openReportForm(doc ? { docId: doc.id } : {}) }] };
+  }
+
+  if (doc && (has('sem_doc') || has('prazo'))) {
+    let txt = `Sem problema. Sobre "${doc.name}":\n\n${doc.help}`;
+    if (doc.required) txt += `\n\nSe não der para conseguir em 24h, você pode registrar isso aqui mesmo no portal: o RH recebe o seu motivo e a previsão de entrega, e o documento deixa de contar como "faltando".`;
+    else txt += `\n\nEste documento é opcional, então não impede você de concluir.`;
+    return { text: txt, actions: docActions(doc) };
+  }
+
+  if (has('sem_doc')) {
+    return { text: 'Entendi — você não está com algum documento. Me diz qual (ex.: RG, CTPS, título de eleitor) e eu explico como conseguir. Se não for possível em 24h, dá para registrar o motivo e a previsão de entrega e seguir com o resto.', actions: [{ label: 'Avisar o RH', fn: () => openReportForm() }] };
+  }
+
+  if (doc && has('qualidade')) {
+    return { text: `Para "${doc.name}" ser aceito, a foto precisa estar legível. Dicas:\n\n• ${QUALITY_TIPS.join('\n• ')}\n\nSe você já tentou várias vezes e continua sendo recusada, me avise que eu registro para o RH.`, actions: docActions(doc) };
+  }
+  if (has('qualidade')) {
+    return { text: `O portal confere a foto na hora (tamanho, nitidez e luz) e recusa se não dá para ler, para evitar que o RH precise te pedir de novo depois. Dicas para passar:\n\n• ${QUALITY_TIPS.join('\n• ')}\n\nSe continuar sendo recusada mesmo com a foto boa, é só me avisar.`, actions: [{ label: 'Avisar o RH', fn: () => openReportForm({ motivo: 'foto' }) }] };
+  }
+
+  if (has('upload')) {
+    return { text: 'Vamos resolver. Tente nesta ordem:\n\n1) Abra esta página no Chrome ou Safari (não dentro do WhatsApp ou Instagram).\n2) Formatos aceitos: PDF, JPG, PNG, WEBP, HEIC e DOC/DOCX.\n3) Se o arquivo for muito pesado ou der erro, tire uma foto nova pela câmera ou salve como PDF.\n4) Feche e abra a página de novo — o que você já enviou fica registrado (só será preciso "Reenviar" para entrar no ZIP).\n\nSe continuar travando, me diga qual documento e o que aparece na tela.', actions: [{ label: 'Avisar o RH', fn: () => openReportForm({ motivo: 'anexar', docId: doc ? doc.id : undefined }) }] };
+  }
+
+  if (has('prazo')) {
+    return { text: 'Se não conseguir algum documento obrigatório dentro das 24h, não precisa travar o processo: em cada documento aparece o botão "Não consigo enviar em 24h". Você escolhe o motivo e em quanto tempo consegue entregar, e o RH recebe o aviso junto com a pasta. Dá para desfazer depois, se conseguir o documento.', actions: [{ label: 'Avisar o RH', fn: () => openReportForm({ motivo: 'prazo' }) }] };
+  }
+
+  if (has('zip')) {
+    return { text: 'Para entregar:\n\n1) Anexe os documentos obrigatórios (ou registre o aviso dos que não conseguir).\n2) Quando aparecer o cartão verde, toque em "Baixar pasta e abrir e-mail do RH".\n3) No e-mail que abrir, toque no clipe (📎) e escolha o arquivo .zip baixado.\n4) Toque em Enviar.\n\nNão achou o arquivo? No Android, abra o aviso "Download concluído" na barra de notificações; no iPhone, app Arquivos → Downloads.', actions: [{ label: 'Avisar o RH', fn: () => openReportForm() }] };
+  }
+
+  if (doc) {
+    return { text: `Sobre "${doc.name}":\n\n${doc.help}`, actions: docActions(doc) };
+  }
+
+  return { text: 'Não tenho certeza se entendi. Você pode tocar em uma das opções abaixo, escrever com outras palavras (ex.: "perdi meu RG") ou montar um aviso para o RH contando o que está acontecendo.', actions: [{ label: 'Avisar o RH', fn: () => openReportForm() }] };
+}
+
+async function aiChat() {
+  if (!AI_CHAT_URL) return null;
+  try {
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 20000);
+    const pendentes = docsAtivos().filter(d => d.required && !hasDoc(d.id)).map(d => d.name);
+    const r = await fetch(AI_CHAT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mensagens: chatHistory.slice(-8), pendentes }),
+      signal: ctrl.signal
+    });
+    clearTimeout(to);
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j && j.resposta ? String(j.resposta) : null;
+  } catch { return null; }
+}
+
+async function chatUser(text, shown) {
+  addMsg('user', shown || text);
+  chatHistory.push({ role: 'user', content: text });
+  const typing = addMsg('bot typing', 'Digitando…');
+  let reply = null;
+  const ai = await aiChat();
+  if (ai) reply = { text: ai, actions: docActions(detectDoc(norm(text))) };
+  if (!reply) reply = localReply(text);
+  typing.remove();
+  botSay(reply.text, reply.actions);
+}
+
+// ---- relato de dificuldade ao RH ----
+function buildReportText(r) {
+  const d = DOCS.find(x => x.id === r.docId);
+  const L = [
+    'Relato de dificuldade — Documentos admissionais',
+    `Nome: ${nomeFunc || '(não informado)'}`,
+    `CPF: ${cpfFunc || '(não informado)'}`,
+    `Telefone: ${telefoneFunc || '(não informado)'}`,
+    `Documento: ${d ? d.name : 'Geral / não é de um documento específico'}`,
+    `O que está acontecendo: ${REPORT_MOTIVOS[r.motivo] || r.motivo}`
+  ];
+  if (r.texto) L.push(`Detalhes: ${r.texto}`);
+  L.push(`Enviado em: ${new Date(r.quando).toLocaleString('pt-BR')}`);
+  return L.join('\n');
+}
+
+function openReportForm(pre) {
+  pre = pre || {};
+  const box = document.createElement('div');
+  box.className = 'chat-report';
+  const docOpts = ['<option value="">Não é de um documento específico</option>']
+    .concat(docsAtivos().map(d => `<option value="${d.id}">${esc(d.name)}</option>`)).join('');
+  const motOpts = Object.entries(REPORT_MOTIVOS).map(([k, t]) => `<option value="${k}">${esc(t)}</option>`).join('');
+  box.innerHTML = `
+    <label for="rep-doc">Qual documento?</label>
+    <select id="rep-doc">${docOpts}</select>
+    <label for="rep-mot">O que está acontecendo?</label>
+    <select id="rep-mot">${motOpts}</select>
+    <label for="rep-txt">Conte com suas palavras (opcional)</label>
+    <textarea id="rep-txt" rows="3" maxlength="400" placeholder="Ex.: aparece erro quando toco em Anexar…"></textarea>
+    <div class="row-btns"><button type="button" class="mini-btn primary" id="rep-go">Gerar aviso</button></div>`;
+  chatLog.appendChild(box);
+  if (pre.docId) box.querySelector('#rep-doc').value = pre.docId;
+  if (pre.motivo) box.querySelector('#rep-mot').value = pre.motivo;
+  scrollChat();
+
+  box.querySelector('#rep-go').addEventListener('click', () => {
+    const r = {
+      docId: box.querySelector('#rep-doc').value,
+      motivo: box.querySelector('#rep-mot').value,
+      texto: box.querySelector('#rep-txt').value.trim(),
+      quando: Date.now()
+    };
+    reports.push(r);
+    if (cpfFunc) saveProgress();
+    box.remove();
+    const txt = buildReportText(r);
+    addMsg('user', `${REPORT_MOTIVOS[r.motivo]}${r.docId ? ' — ' + DOCS.find(d => d.id === r.docId).name : ''}`);
+
+    const acts = [
+      { label: 'Enviar por e-mail ao RH', fn: () => {
+          window.location.href = `mailto:${RH_EMAIL}?subject=${encodeURIComponent('Dificuldade nos documentos - ' + (nomeFunc || 'Candidato'))}&body=${encodeURIComponent(txt)}`;
+        } },
+      { label: 'Copiar texto', fn: async () => {
+          try { await navigator.clipboard.writeText(txt); addMsg('bot', 'Texto copiado. É só colar no WhatsApp ou e-mail.'); }
+          catch { addMsg('bot', 'Não consegui copiar automaticamente. Selecione e copie o texto acima manualmente.'); }
+        } }
+    ];
+    const d = r.docId ? DOCS.find(x => x.id === r.docId) : null;
+    if (d && d.required && !hasDoc(d.id) && !justif[d.id] && $('step-docs').classList.contains('active')) {
+      acts.push({ label: 'Marcar "não consigo em 24h"', fn: () => { scrollToDoc(d.id); openJustify(d.id); } });
+    }
+    botSay(`Pronto, montei o aviso. Ele também vai junto no índice da pasta que você baixar. Para o RH receber agora, toque em "Enviar por e-mail":\n\n${txt}`, acts);
+  });
+}
+
+function chatOpenForDoc(id, problema) {
+  const d = DOCS.find(x => x.id === id);
+  chatOpen();
+  addMsg('bot', `Vi que o arquivo de "${d ? d.name : 'documento'}" não passou na verificação${problema ? ': ' + problema : ''}\n\nQuer tentar de novo seguindo as dicas, ou prefere avisar o RH?`);
+  addMsg('bot', 'Dicas para foto legível:\n\n• ' + QUALITY_TIPS.join('\n• '));
+  addActions([
+    { label: 'Avisar o RH', fn: () => openReportForm({ docId: id, motivo: 'foto' }) },
+    ...(d && d.required && !hasDoc(id) && !justif[id] ? [{ label: 'Não consigo em 24h', fn: () => { scrollToDoc(id); openJustify(id); } }] : [])
+  ]);
+}
 </script>
 </body>
 </html>
